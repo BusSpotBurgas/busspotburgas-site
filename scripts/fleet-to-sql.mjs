@@ -1,7 +1,7 @@
 // Превръща data/fleet.json в SQL за Supabase.
 // Пускане: npm run db:sql   →  създава supabase/seed.sql и supabase/setup.sql
 // setup.sql = схема + данни в един файл (за поставяне в SQL Editor на Supabase).
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -49,6 +49,8 @@ on conflict (fleet_number) do update set
 `;
 
 writeFileSync(join(root, "supabase/seed.sql"), seed);
-const schema = readFileSync(join(root, "supabase/migrations/0001_init.sql"), "utf8");
+const migDir = join(root, "supabase/migrations");
+const schema = readdirSync(migDir).filter((f) => f.endsWith(".sql")).sort()
+  .map((f) => readFileSync(join(migDir, f), "utf8")).join("\n\n");
 writeFileSync(join(root, "supabase/setup.sql"), `${schema}\n\n${seed}\nselect count(*) as "коли в базата" from public.vehicles;\n`);
 console.log(`OK: ${modelRows.length} модела, ${vehicleRows.length} коли → supabase/setup.sql`);
