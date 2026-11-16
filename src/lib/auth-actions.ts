@@ -94,7 +94,7 @@ export async function forgotPasswordAction(_: FormState, f: FormData): Promise<F
   const db = await createSessionClient();
   const { error } = await db.auth.resetPasswordForEmail(email, {
     captchaToken: str(f, "captcha") || undefined,
-    redirectTo: `${await siteOrigin()}/auth/confirm`,
+    redirectTo: `${await siteOrigin()}/auth/confirm?flow=recovery`,
   });
   // Не казваме дали имейлът съществува
   if (error && mapError(error) !== "generic") return { error: mapError(error) };

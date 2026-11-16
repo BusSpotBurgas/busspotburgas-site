@@ -226,8 +226,8 @@ set search_path = ''
 as $$
 declare
   meta    jsonb := coalesce(new.raw_user_meta_data, '{}'::jsonb);
-  age_ok  boolean := (meta->>'age_confirmed') = 'true';
-  term_ok boolean := (meta->>'terms_accepted') = 'true';
+  age_ok  boolean := coalesce((meta->>'age_confirmed') = 'true', false);
+  term_ok boolean := coalesce((meta->>'terms_accepted') = 'true', false);
   loc     text := case when meta->>'locale' in ('bg', 'en') then meta->>'locale' else 'bg' end;
 begin
   insert into public.profiles (id, age_confirmed, terms_accepted_at, locale, onboarding_step)
