@@ -279,11 +279,11 @@ set search_path = ''
 as $$
 declare
   email  text := lower(coalesce(event->'user'->>'email', ''));
-  domain text := split_part(email, '@', 2);
+  v_domain text := split_part(email, '@', 2);
 begin
-  if domain <> '' and exists (
+  if v_domain <> '' and exists (
     select 1 from public.blocked_email_domains b
-    where domain = b.domain or domain like '%.' || b.domain
+    where v_domain = b.domain or v_domain like '%.' || b.domain
   ) then
     return jsonb_build_object('error', jsonb_build_object(
       'http_code', 400,
