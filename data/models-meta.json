@@ -1,0 +1,11 @@
+{
+  "u12":  { "type_en": "Bus · CNG",                "color": "#0B6FA4", "silhouette": "12m",     "sort": 1 },
+  "i12":  { "type_en": "Electric bus",             "color": "#0EA5A0", "silhouette": "12m",     "sort": 2 },
+  "u18":  { "type_en": "Articulated · diesel",     "color": "#1E3A8A", "silhouette": "18m",     "sort": 3 },
+  "tr":   { "type_en": "Trolleybus",               "color": "#EA580C", "silhouette": "trolley", "sort": 4 },
+  "y9":   { "type_en": "Electric bus · 9 m",       "color": "#16A34A", "silhouette": "9m",      "sort": 5 },
+  "i18":  { "type_en": "Electric · articulated",   "color": "#0F766E", "silhouette": "18m",     "sort": 6 },
+  "u18m": { "type_en": "Articulated · MetroStyle", "color": "#7C3AED", "silhouette": "18m",     "sort": 7 },
+  "kj":   { "type_en": "Minibus",                  "color": "#DB2777", "silhouette": "mini",    "sort": 8 },
+  "ka":   { "type_en": "Midibus",                  "color": "#CA8A04", "silhouette": "9m",      "sort": 9 }
+}

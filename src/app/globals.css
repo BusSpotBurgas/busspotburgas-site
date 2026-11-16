@@ -1,26 +1,97 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────
+   Дизайн система busspotburgas
+   Светло и чисто · морско синьо за акцент
+   Заглавия и номера: Unbounded · текст: Inter
+   ───────────────────────────────────────────── */
+@theme {
+  /* Морско синьо */
+  --color-sea-50:  #EEF7FC;
+  --color-sea-100: #D6ECF8;
+  --color-sea-200: #ADD8F0;
+  --color-sea-300: #74BBE3;
+  --color-sea-400: #3B98D0;
+  --color-sea-500: #0B6FA4;  /* основен акцент */
+  --color-sea-600: #095C89;
+  --color-sea-700: #0A4A6E;
+  --color-sea-800: #0C3B57;
+  --color-sea-900: #0B2A3E;
+
+  /* Неутрални (леко хладни) */
+  --color-ink:     #0F1B26;  /* основен текст */
+  --color-muted:   #5B6B78;  /* второстепенен текст */
+  --color-line:    #E3EAF0;  /* линии и рамки */
+  --color-surface: #FFFFFF;  /* карти */
+  --color-canvas:  #F6F9FB;  /* фон на страницата */
+  --color-sand:    #FFF6E5;  /* топъл акцент за бележки */
+
+  /* Статуси */
+  --color-run:      #16A34A;
+  --color-new:      #0B6FA4;
+  --color-stop:     #D97706;
+  --color-off:      #6B7280;
+  --color-scrapped: #9F1239;
+
+  /* Табелки на линии */
+  --color-line-bus:     #0B6FA4;
+  --color-line-express: #16A34A;
+  --color-line-trolley: #EA580C;
+
+  --font-display: var(--font-unbounded), "Arial Black", sans-serif;
+  --font-sans:    var(--font-inter), system-ui, sans-serif;
+
+  --radius-card: 14px;
+  --shadow-card: 0 1px 2px rgb(15 27 38 / 0.05), 0 4px 16px rgb(15 27 38 / 0.05);
+  --shadow-lift: 0 2px 4px rgb(15 27 38 / 0.06), 0 12px 28px rgb(11 111 164 / 0.12);
+
+  --animate-pulse-dot: pulse-dot 1.8s ease-out infinite;
+  --animate-drive: drive 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%   { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+  70%  { box-shadow: 0 0 0 10px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+@keyframes drive {
+  0%   { transform: translateX(-24px); }
+  50%  { transform: translateX(24px); }
+  100% { transform: translateX(-24px); }
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+}
+
+/* Номерата на колите – винаги с еднаква ширина на цифрите */
+.num {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-sea-500);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

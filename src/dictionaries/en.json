@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "title": "busspotburgas – Burgasbus spotters",
+    "description": "Photos of every bus in Burgas by fleet number, owners, ratings, points and live sightings."
+  },
+  "nav": {
+    "home": "Home",
+    "fleet": "Fleet",
+    "history": "History",
+    "lines": "Lines",
+    "rankings": "Rankings",
+    "live": "Live map",
+    "liveShort": "Live",
+    "upload": "Upload",
+    "profile": "Profile",
+    "search": "Search number, line, spotter…",
+    "notifications": "Notifications",
+    "language": "Language",
+    "soon": "Soon"
+  },
+  "footer": {
+    "rules": "Terms",
+    "privacy": "Privacy",
+    "contact": "Contact the admin",
+    "tagline": "A community site for Burgasbus spotters. No ads."
+  },
+  "home": {
+    "kicker": "Burgasbus spotters",
+    "title": "Every bus in Burgas. One photo at a time.",
+    "lead": "Shoot, upload and collect every vehicle of the city's public transport. Pick your own bus, earn points and see live sightings around town.",
+    "ctaFleet": "Browse the fleet",
+    "ctaJoin": "Create a profile",
+    "statVehicles": "vehicles",
+    "statModels": "models",
+    "statActive": "in service",
+    "modelsTitle": "Models",
+    "stageNote": "The site is being built in stages. Now: the foundation. Next up: profiles, photos and Live."
+  },
+  "fleet": {
+    "title": "Fleet",
+    "lead": "Every Burgasbus vehicle. No photo yet? Be the first!",
+    "all": "All",
+    "beFirst": "Be first! +20 pts",
+    "photos": "photos",
+    "count": "vehicles",
+    "dbMissing": "The database is not connected yet. Add the Supabase keys (see README).",
+    "since": "in Burgas since"
+  },
+  "status": {
+    "run": "In service",
+    "new": "New, not in service",
+    "stop": "Parked",
+    "off": "Withdrawn / parts",
+    "scrapped": "Scrapped"
+  },
+  "offline": "You're offline – showing the saved version."
+}
