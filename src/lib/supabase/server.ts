@@ -28,3 +28,15 @@ export function createPublicClient() {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
+
+/**
+ * Клиент със СЕКРЕТНИЯ ключ – само за сървъра (изтриване на акаунт).
+ * Заобикаля RLS, затова се ползва само след проверка кой е спотърът.
+ */
+export function createAdminClient() {
+  const secret = process.env.SUPABASE_SECRET_KEY;
+  if (!secret) throw new Error("SUPABASE_SECRET_KEY липсва");
+  return createClient(supabaseUrl, secret, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}

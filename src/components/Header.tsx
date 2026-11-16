@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import { getCurrentUser } from "@/lib/auth";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { IconBell, IconSearch } from "./icons";
 import { Logo } from "./Logo";
-import { LangSwitch, TopNav } from "./Nav";
+import { LangSwitch, LangSwitchView, TopNav, TopNavView } from "./Nav";
+import { Avatar } from "./ProfileForm";
 
 export function Header({ lang, t }: { lang: Locale; t: Dictionary }) {
   const items = [
@@ -18,7 +21,9 @@ export function Header({ lang, t }: { lang: Locale; t: Dictionary }) {
         <Link href={`/${lang}`} aria-label={t.nav.home} className="shrink-0">
           <Logo />
         </Link>
-        <TopNav lang={lang} items={items} soon={t.nav.soon} />
+        <Suspense fallback={<TopNavView lang={lang} items={items} soon={t.nav.soon} pathname="" />}>
+          <TopNav lang={lang} items={items} soon={t.nav.soon} />
+        </Suspense>
         <div className="ml-auto flex items-center gap-2">
           {/* Търсачката заработва в Етап 6 */}
           <label className="hidden items-center gap-2 rounded-full border border-line bg-canvas px-3 py-2 text-sm text-muted md:flex">
@@ -39,21 +44,43 @@ export function Header({ lang, t }: { lang: Locale; t: Dictionary }) {
           >
             <IconBell className="size-5" />
           </button>
-          <LangSwitch lang={lang} label={t.nav.language} />
+          <Suspense fallback={<LangSwitchView lang={lang} label={t.nav.language} pathname={`/${lang}`} />}>
+            <LangSwitch lang={lang} label={t.nav.language} />
+          </Suspense>
+          <Suspense fallback={<span className="size-9" />}>
+            <UserSlot lang={lang} t={t} />
+          </Suspense>
         </div>
       </div>
     </header>
   );
 }
 
-export function Footer({ t }: { t: Dictionary }) {
+/** Вход или снимката на спотъра (чете бисквитката – затова е в <Suspense>). */
+async function UserSlot({ lang, t }: { lang: Locale; t: Dictionary }) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return (
+      <Link href={`/${lang}/login`} className="hidden rounded-full bg-sea-500 px-4 py-2 text-sm font-semibold text-white hover:bg-sea-600 sm:inline-block">
+        {t.nav.login}
+      </Link>
+    );
+  }
+  return (
+    <Link href={`/${lang}/me`} aria-label={t.nav.profile} className="hidden sm:block">
+      <Avatar url={user.profile.avatar_url} name={user.profile.display_name ?? user.email} size="size-9 text-sm" />
+    </Link>
+  );
+}
+
+export function Footer({ t, lang }: { t: Dictionary; lang: Locale }) {
   return (
     <footer className="mt-16 border-t border-line bg-surface pb-24 lg:pb-0">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
         <p>{t.footer.tagline}</p>
         <nav className="flex flex-wrap gap-x-5 gap-y-2">
-          <span title={t.nav.soon}>{t.footer.rules}</span>
-          <span title={t.nav.soon}>{t.footer.privacy}</span>
+          <Link href={`/${lang}/rules`} className="hover:text-ink">{t.footer.rules}</Link>
+          <Link href={`/${lang}/privacy`} className="hover:text-ink">{t.footer.privacy}</Link>
           <span title={t.nav.soon}>TikTok</span>
           <a href="mailto:busspotburgas@gmail.com" className="text-sea-600 hover:underline">
             {t.footer.contact}

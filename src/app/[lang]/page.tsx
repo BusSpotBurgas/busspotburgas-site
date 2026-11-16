@@ -35,12 +35,12 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
               >
                 {t.home.ctaFleet} <IconArrow className="size-4" />
               </Link>
-              <span
-                title={t.nav.soon}
-                className="inline-flex cursor-default items-center rounded-xl border border-line bg-surface px-5 py-3 font-semibold text-muted"
+              <Link
+                href={`/${lang}/register`}
+                className="inline-flex items-center rounded-xl border border-line bg-surface px-5 py-3 font-semibold text-ink transition hover:border-sea-300"
               >
                 {t.home.ctaJoin}
-              </span>
+              </Link>
             </div>
             {fleet.ok && (
               <dl className="mt-10 flex gap-8">

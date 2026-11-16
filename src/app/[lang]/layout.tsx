@@ -2,7 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Unbounded } from "next/font/google";
 import { notFound } from "next/navigation";
 import { Footer, Header } from "@/components/Header";
-import { BottomNav } from "@/components/Nav";
+import { BottomNav, BottomNavView } from "@/components/Nav";
+import { Suspense } from "react";
 import { RegisterSW } from "@/components/RegisterSW";
 import { getDictionary, hasLocale, locales } from "@/lib/i18n";
 import "../globals.css";
@@ -50,23 +51,23 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const t = await getDictionary(lang);
+  const navLabels = {
+    home: t.nav.home,
+    fleet: t.nav.fleet,
+    upload: t.nav.upload,
+    live: t.nav.liveShort,
+    profile: t.nav.profile,
+  };
 
   return (
     <html lang={lang} className={`${unbounded.variable} ${inter.variable} antialiased`}>
       <body className="flex min-h-dvh flex-col">
         <Header lang={lang} t={t} />
         <main className="flex-1">{children}</main>
-        <Footer t={t} />
-        <BottomNav
-          lang={lang}
-          labels={{
-            home: t.nav.home,
-            fleet: t.nav.fleet,
-            upload: t.nav.upload,
-            live: t.nav.liveShort,
-            profile: t.nav.profile,
-          }}
-        />
+        <Footer t={t} lang={lang} />
+        <Suspense fallback={<BottomNavView lang={lang} labels={navLabels} pathname="" />}>
+          <BottomNav lang={lang} labels={navLabels} />
+        </Suspense>
         <RegisterSW />
       </body>
     </html>

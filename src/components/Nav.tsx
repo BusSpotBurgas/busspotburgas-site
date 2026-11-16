@@ -12,8 +12,11 @@ function isActive(pathname: string, href: string, lang: string) {
 }
 
 /** BG / EN превключвател – запазва същата страница и помни избора. */
-export function LangSwitch({ lang, label }: { lang: string; label: string }) {
-  const pathname = usePathname();
+export function LangSwitch(p: { lang: string; label: string }) {
+  return <LangSwitchView {...p} pathname={usePathname()} />;
+}
+
+export function LangSwitchView({ lang, label, pathname }: { lang: string; label: string; pathname: string }) {
   const rest = pathname.replace(/^\/(bg|en)(?=\/|$)/, "");
   return (
     <div role="group" aria-label={label} className="flex rounded-full border border-line bg-surface p-0.5 text-xs font-semibold">
@@ -38,8 +41,11 @@ export function LangSwitch({ lang, label }: { lang: string; label: string }) {
 }
 
 /** Горно меню на компютър. */
-export function TopNav({ lang, items, soon }: { lang: string; items: Item[]; soon: string }) {
-  const pathname = usePathname();
+export function TopNav(p: { lang: string; items: Item[]; soon: string }) {
+  return <TopNavView {...p} pathname={usePathname()} />;
+}
+
+export function TopNavView({ lang, items, soon, pathname }: { lang: string; items: Item[]; soon: string; pathname: string }) {
   return (
     <nav className="hidden items-center gap-1 lg:flex">
       {items.map((it) =>
@@ -64,20 +70,19 @@ export function TopNav({ lang, items, soon }: { lang: string; items: Item[]; soo
 }
 
 /** Долно меню на телефон: Начало, Автопарк, „+“, Live, Профил. */
-export function BottomNav({
-  lang,
-  labels,
-}: {
-  lang: string;
-  labels: { home: string; fleet: string; upload: string; live: string; profile: string };
-}) {
-  const pathname = usePathname();
+type BottomLabels = { home: string; fleet: string; upload: string; live: string; profile: string };
+
+export function BottomNav(p: { lang: string; labels: BottomLabels }) {
+  return <BottomNavView {...p} pathname={usePathname()} />;
+}
+
+export function BottomNavView({ lang, labels, pathname }: { lang: string; labels: BottomLabels; pathname: string }) {
   const items: { href: string | null; label: string; icon: ReactNode; main?: boolean }[] = [
     { href: `/${lang}`, label: labels.home, icon: <IconHome className="size-6" /> },
     { href: `/${lang}/fleet`, label: labels.fleet, icon: <IconBus className="size-6" /> },
     { href: null, label: labels.upload, icon: <IconPlus className="size-6" />, main: true },
     { href: null, label: labels.live, icon: <IconLive className="size-6" /> },
-    { href: null, label: labels.profile, icon: <IconUser className="size-6" /> },
+    { href: `/${lang}/me`, label: labels.profile, icon: <IconUser className="size-6" /> },
   ];
   return (
     <nav
