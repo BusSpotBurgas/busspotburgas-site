@@ -52,6 +52,22 @@ export function LegalPage({ kind, lang, title, draft }: { kind: "rules" | "priva
         {items.map((x) => (
           <li key={x}>{x}</li>
         ))}
+        {kind === "privacy" && (
+          <li>
+            {lang === "bg"
+              ? "Регистрацията и входът са защитени от Cloudflare Turnstile (невидима проверка „не съм робот“). За нея важи "
+              : "Sign-up and login are protected by Cloudflare Turnstile (an invisible \"not a robot\" check). It is covered by the "}
+            <a
+              href="https://www.cloudflare.com/turnstile-privacy-policy/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sea-600 underline"
+            >
+              {lang === "bg" ? "Допълнението за поверителност на Cloudflare Turnstile" : "Cloudflare Turnstile Privacy Addendum"}
+            </a>
+            .
+          </li>
+        )}
       </ol>
     </div>
   );
