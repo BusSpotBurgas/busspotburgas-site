@@ -435,6 +435,9 @@ create policy "avatars_own_delete" on storage.objects for delete to authenticate
 create table if not exists public.blocked_email_domains (domain text primary key);
 alter table public.blocked_email_domains enable row level security;
 revoke all on public.blocked_email_domains from anon, authenticated;
+-- RLS скрива редовете и от Supabase Auth – затова изрично правило само за него
+drop policy if exists "auth_admin_read" on public.blocked_email_domains;
+create policy "auth_admin_read" on public.blocked_email_domains for select to supabase_auth_admin using (true);
 
 insert into public.blocked_email_domains (domain) values
   ('10minutemail.com'), ('10minutemail.net'), ('10minemail.com'), ('20minutemail.com'),
