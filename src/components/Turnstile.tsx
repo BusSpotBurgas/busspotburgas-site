@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 type TurnstileApi = {
   render: (el: HTMLElement, opts: Record<string, unknown>) => string;
   remove: (id: string) => void;
+  reset: (id: string) => void;
 };
 declare global {
   interface Window {
@@ -31,9 +32,20 @@ function loadScript(): Promise<void> {
  * Слага жетона в скрито поле „captcha“; Supabase го проверява на сървъра.
  * `resetKey` – смени го след грешка, за да се вземе нов жетон (всеки е за еднократна употреба).
  */
-export function Turnstile({ lang, resetKey, onReady }: { lang: string; resetKey?: unknown; onReady?: (ok: boolean) => void }) {
+export function Turnstile({
+  lang,
+  resetKey,
+  onReady,
+  failedText,
+}: {
+  lang: string;
+  resetKey?: unknown;
+  onReady?: (ok: boolean) => void;
+  failedText?: string;
+}) {
   const box = useRef<HTMLDivElement>(null);
   const [token, setToken] = useState("");
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     if (!SITE_KEY || !box.current) {
@@ -53,12 +65,24 @@ export function Turnstile({ lang, resetKey, onReady }: { lang: string; resetKey?
           appearance: "interaction-only",
           callback: (t: string) => {
             setToken(t);
+            setFailed(false);
             onReady?.(true);
           },
           "expired-callback": () => {
             setToken("");
             onReady?.(false);
           },
+          // Неуспешна проверка: показваме съобщение и опитваме пак след малко
+          "error-callback": () => {
+            setToken("");
+            setFailed(true);
+            onReady?.(false);
+            setTimeout(() => {
+              if (id && window.turnstile) window.turnstile.reset(id);
+            }, 4000);
+            return true;
+          },
+          "before-interactive-callback": () => setFailed(false),
         });
       })
       .catch(() => onReady?.(true)); // ако скриптът не зареди, Supabase ще върне грешка за проверката
@@ -73,6 +97,7 @@ export function Turnstile({ lang, resetKey, onReady }: { lang: string; resetKey?
     <>
       <input type="hidden" name="captcha" value={token} />
       <div ref={box} className="flex justify-center empty:hidden" />
+      {failed && failedText && <p className="text-center text-xs text-stop">{failedText}</p>}
     </>
   );
 }

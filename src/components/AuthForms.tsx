@@ -73,7 +73,7 @@ export function LoginForm({ lang, t }: { lang: string; t: T }) {
             {t.auth.forgot}
           </Link>
         </div>
-        <Turnstile lang={lang} resetKey={state} onReady={setReady} />
+        <Turnstile lang={lang} resetKey={state} onReady={setReady} failedText={t.errors.captchaRetry} />
         <FormError message={errText(t, state)} />
         <Submit disabled={!ready}>{t.auth.submitLogin}</Submit>
       </form>
@@ -114,7 +114,7 @@ export function RegisterForm({ lang, t }: { lang: string; t: T }) {
             </Link>
           </Check>
         </div>
-        <Turnstile lang={lang} resetKey={state} onReady={setReady} />
+        <Turnstile lang={lang} resetKey={state} onReady={setReady} failedText={t.errors.captchaRetry} />
         <FormError message={errText(t, state)} />
         <Submit disabled={!ready}>{t.auth.submitRegister}</Submit>
       </form>
@@ -129,7 +129,7 @@ export function ForgotForm({ lang, t }: { lang: string; t: T }) {
   return (
     <form action={action} className="space-y-4">
       <Field label={t.auth.email} name="email" type="email" autoComplete="email" required />
-      <Turnstile lang={lang} resetKey={state} onReady={setReady} />
+      <Turnstile lang={lang} resetKey={state} onReady={setReady} failedText={t.errors.captchaRetry} />
       <FormError message={errText(t, state)} />
       <Submit disabled={!ready}>{t.auth.sendLink}</Submit>
     </form>

@@ -118,7 +118,8 @@
     "avatarType": "Photo must be JPG, PNG or WebP.",
     "avatarTooBig": "Photo is too large.",
     "mfaInvalid": "Wrong code. Try again.",
-    "deleteConfirm": "Type the word exactly to confirm."
+    "deleteConfirm": "Type the word exactly to confirm.",
+    "captchaRetry": "The \"not a robot\" check failed – retrying…"
   },
   "onboarding": {
     "stepOf": "Step {n} of {total}",
