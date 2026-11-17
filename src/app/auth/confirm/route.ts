@@ -1,6 +1,6 @@
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
-import { afterLoginPath } from "@/lib/auth";
+import { afterLoginPath, publicOrigin } from "@/lib/auth";
 import { createSessionClient } from "@/lib/supabase/server";
 
 const TYPES: EmailOtpType[] = ["signup", "email", "recovery", "email_change", "invite", "magiclink"];
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
         : type === "email_change"
           ? `/${lang}/settings`
           : afterLoginPath(lang, p?.onboarding_step ?? "consent");
-    return NextResponse.redirect(new URL(target, url.origin));
+    return NextResponse.redirect(new URL(target, publicOrigin(req)));
   }
-  return NextResponse.redirect(new URL(`/bg/login?error=link`, url.origin));
+  return NextResponse.redirect(new URL(`/bg/login?error=link`, publicOrigin(req)));
 }

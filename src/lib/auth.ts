@@ -82,3 +82,11 @@ export async function siteOrigin(): Promise<string> {
   const proto = h.get("x-forwarded-proto") ?? "https";
   return host ? `${proto}://${host}` : (process.env.URL ?? "https://busspotburgas.netlify.app");
 }
+
+/** Публичният адрес за пренасочване в /auth/* (Netlify иначе дава вътрешния адрес на конкретното пускане). */
+export function publicOrigin(req: { headers: Headers; nextUrl: URL }): string {
+  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+  const proto = req.headers.get("x-forwarded-proto") ?? "https";
+  if (host && !host.includes("--")) return `${proto}://${host}`;
+  return process.env.URL ?? req.nextUrl.origin;
+}
