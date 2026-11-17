@@ -7,11 +7,13 @@ export function AuthShell({ title, lead, children, footer }: { title: string; le
     <div className="mx-auto grid max-w-5xl gap-8 px-4 py-8 sm:py-12 lg:grid-cols-2 lg:items-center">
       <div aria-hidden="true" className="relative hidden aspect-[4/5] overflow-hidden rounded-[28px] bg-gradient-to-br from-sea-500 to-sea-800 lg:block">
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-sea-900/40" />
-        <div className="absolute -left-10 bottom-24 w-[115%] opacity-90">
-          <BusSilhouette kind="18m" color="#ffffff" className="w-full" />
+        {/* „Път“ + два автобуса в светли морски тонове, за да се виждат прозорците */}
+        <div className="absolute inset-x-0 bottom-20 h-px bg-white/25" />
+        <div className="absolute inset-x-8 bottom-[5.1rem]">
+          <BusSilhouette kind="18m" color="#ADD8F0" className="w-full" />
         </div>
-        <div className="absolute right-10 top-28 w-1/2 opacity-30">
-          <BusSilhouette kind="trolley" color="#ffffff" className="w-full" />
+        <div className="absolute right-8 top-1/3 w-1/2 opacity-40">
+          <BusSilhouette kind="trolley" color="#74BBE3" className="w-full" />
         </div>
         <p className="absolute left-8 top-8 font-display text-2xl font-extrabold leading-tight text-white">
           busspot<br />burgas
