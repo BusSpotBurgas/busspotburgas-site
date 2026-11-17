@@ -23,12 +23,12 @@ export function ProfileHeader({
   return (
     <div className="overflow-hidden rounded-card border border-line bg-surface shadow-card">
       <div className="relative h-28 bg-gradient-to-r from-sea-500 to-sea-700 sm:h-36">
-        <div className="absolute -bottom-3 right-4 w-56 opacity-25">
-          <BusSilhouette kind="18m" color="#fff" className="w-full" />
+        <div className="absolute bottom-2 right-6 w-56 opacity-40">
+          <BusSilhouette kind="18m" color="#ADD8F0" className="w-full" />
         </div>
       </div>
       <div className="flex flex-wrap items-end gap-4 px-5 pb-5">
-        <div className="-mt-10">
+        <div className="relative z-10 -mt-12">
           <Avatar url={avatar} name={name} size="size-24" />
         </div>
         <div className="min-w-0 flex-1">
