@@ -2,13 +2,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BusSilhouette } from "@/components/BusSilhouette";
 import { IconArrow } from "@/components/icons";
+import { PhotoCard } from "@/components/PhotoCard";
 import { getFleet } from "@/lib/fleet";
+import { getLatestPhotos } from "@/lib/photos";
 import { getDictionary, hasLocale } from "@/lib/i18n";
 
 export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
-  const [t, fleet] = await Promise.all([getDictionary(lang), getFleet()]);
+  const [t, fleet, latest] = await Promise.all([getDictionary(lang), getFleet(), getLatestPhotos(8)]);
 
   const active = fleet.vehicles.filter((v) => v.status === "run").length;
   const stats = [
@@ -67,6 +69,22 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pt-6">
+        <h2 className="font-display text-2xl font-bold tracking-tight">{t.home.latest}</h2>
+        {latest.length ? (
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {latest.map((p) => (
+              <PhotoCard key={p.id} p={p} lang={lang} former={t.photo.formerSpotter} />
+            ))}
+          </div>
+        ) : (
+          <p className="mt-4 rounded-card border border-line bg-surface p-4 text-sm text-muted">
+            {t.home.noPhotos}{" "}
+            <Link href={`/${lang}/upload`} className="font-semibold text-sea-600 hover:underline">{t.upload.title} →</Link>
+          </p>
+        )}
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pt-10">
         <h2 className="font-display text-2xl font-bold tracking-tight">{t.home.modelsTitle}</h2>
         {fleet.ok ? (
           <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

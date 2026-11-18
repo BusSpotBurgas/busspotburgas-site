@@ -131,3 +131,13 @@ export async function deleteAccountAction(_: FormState, f: FormData): Promise<Fo
   await db.auth.signOut();
   redirect(`/${lang}`);
 }
+
+/** Спиране/пускане на вид имейли (поканите за ортаци идват винаги – там няма превключвател). */
+export async function setEmailPrefAction(key: string, value: boolean) {
+  if (!["photo_review"].includes(key)) return { error: "generic" };
+  const { db, uid } = await session();
+  const { data: p } = await db.from("profiles").select("email_prefs").eq("id", uid).single();
+  const prefs = { ...((p?.email_prefs as Record<string, boolean>) ?? {}), [key]: Boolean(value) };
+  const { error } = await db.from("profiles").update({ email_prefs: prefs }).eq("id", uid);
+  return error ? { error: "generic" } : { ok: true };
+}

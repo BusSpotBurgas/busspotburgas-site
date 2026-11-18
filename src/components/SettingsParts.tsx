@@ -3,7 +3,7 @@
 import { useActionState, useState, useTransition } from "react";
 import type { Model } from "@/lib/fleet";
 import type { Dictionary } from "@/lib/i18n";
-import { deleteAccountAction, exportDataAction } from "@/lib/profile-actions";
+import { deleteAccountAction, exportDataAction, setEmailPrefAction } from "@/lib/profile-actions";
 import { HolderPicker, type HolderVehicle } from "./HolderPicker";
 import { Field, FormError, Submit } from "./ui";
 
@@ -80,5 +80,29 @@ export function DeleteAccount({ lang, t }: { lang: string; t: Pick<Dictionary, "
         {t.settings.deleteButton}
       </Submit>
     </form>
+  );
+}
+
+export function EmailPref({ name, label, initial }: { name: string; label: string; initial: boolean }) {
+  const [on, setOn] = useState(initial);
+  const [pending, start] = useTransition();
+  return (
+    <label className="flex items-start gap-3 text-sm">
+      <input
+        type="checkbox"
+        checked={on}
+        disabled={pending}
+        onChange={(e) => {
+          const v = e.target.checked;
+          setOn(v);
+          start(async () => {
+            const r = await setEmailPrefAction(name, v);
+            if (!r.ok) setOn(!v);
+          });
+        }}
+        className="mt-0.5 size-4.5 shrink-0 accent-sea-500"
+      />
+      <span>{label}</span>
+    </label>
   );
 }
