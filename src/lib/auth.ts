@@ -1,6 +1,7 @@
 import "server-only";
 
 import { headers } from "next/headers";
+import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { hasSupabase } from "./supabase/env";
 import { createSessionClient } from "./supabase/server";
@@ -33,6 +34,7 @@ const PROFILE_COLS = "id,display_name,avatar_url,tiktok,role,locale,age_confirme
 /** Влезлият спотър (проверен от Supabase) или null. Чете бисквитките – само в <Suspense>. */
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   if (!hasSupabase) return null;
+  await connection(); // винаги при заявка (сесията зависи от часа и бисквитката)
   const db = await createSessionClient();
   const { data: auth } = await db.auth.getUser();
   if (!auth.user) return null;
