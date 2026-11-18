@@ -80,7 +80,7 @@ export function BottomNavView({ lang, labels, pathname }: { lang: string; labels
   const items: { href: string | null; label: string; icon: ReactNode; main?: boolean }[] = [
     { href: `/${lang}`, label: labels.home, icon: <IconHome className="size-6" /> },
     { href: `/${lang}/fleet`, label: labels.fleet, icon: <IconBus className="size-6" /> },
-    { href: null, label: labels.upload, icon: <IconPlus className="size-6" />, main: true },
+    { href: `/${lang}/upload`, label: labels.upload, icon: <IconPlus className="size-6" />, main: true },
     { href: null, label: labels.live, icon: <IconLive className="size-6" /> },
     { href: `/${lang}/me`, label: labels.profile, icon: <IconUser className="size-6" /> },
   ];

@@ -69,7 +69,4 @@ export function FormOk({ message }: { message?: string }) {
   );
 }
 
-/** Подмяна на {n} и {total} в преводите. */
-export function fmt(s: string, vars: Record<string, string | number>) {
-  return s.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? ""));
-}
+export { fmt } from "@/lib/fmt";

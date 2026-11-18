@@ -46,6 +46,9 @@ async function Me({ lang }: { lang: Locale }) {
         <Link href={`/${lang}/settings`} className="rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-semibold hover:border-sea-300">
           ⚙ {t.me.settings}
         </Link>
+        <Link href={`/${lang}/me/photos`} className="rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-semibold hover:border-sea-300">
+          📷 {t.myPhotos.title}
+        </Link>
         <Link href={`/${lang}/spotter/${user.id}`} className="rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-semibold hover:border-sea-300">
           👁 {t.me.publicProfile}
         </Link>

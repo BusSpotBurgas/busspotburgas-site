@@ -25,7 +25,7 @@ export default async function FleetPage({ params }: PageProps<"/[lang]/fleet">) 
             models={fleet.models}
             vehicles={fleet.vehicles}
             lang={lang}
-            labels={{ all: t.fleet.all, beFirst: t.fleet.beFirst, count: t.fleet.count, status: t.status }}
+            labels={{ all: t.fleet.all, beFirst: t.fleet.beFirst, count: t.fleet.count, photos: t.fleet.photos, status: t.status }}
           />
         ) : (
           <p className="rounded-card border border-line bg-sand p-4 text-sm">{t.fleet.dbMissing}</p>

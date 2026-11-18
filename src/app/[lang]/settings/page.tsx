@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 import { ProfileForm } from "@/components/ProfileForm";
-import { DeleteAccount, DownloadData } from "@/components/SettingsParts";
+import { DeleteAccount, DownloadData, EmailPref } from "@/components/SettingsParts";
+import { createSessionClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/auth";
 import { getDictionary, hasLocale, type Locale } from "@/lib/i18n";
 
@@ -32,6 +33,8 @@ function Section({ title, lead, children, danger }: { title: string; lead?: stri
 async function Settings({ lang }: { lang: Locale }) {
   const user = await requireUser(lang, `/${lang}/settings`);
   const t = await getDictionary(lang);
+  const { data: prefs } = await (await createSessionClient()).from("profiles").select("email_prefs").eq("id", user.id).single();
+  const emailPrefs = (prefs?.email_prefs as Record<string, boolean>) ?? {};
   return (
     <div className="mx-auto max-w-2xl space-y-5 px-4 py-8">
       <h1 className="font-display text-3xl font-extrabold">{t.settings.title}</h1>
@@ -49,6 +52,10 @@ async function Settings({ lang }: { lang: Locale }) {
         <Link href={`/${lang}/settings/holders`} className="font-semibold text-sea-600 hover:underline">
           {t.settings.holdersLink} →
         </Link>
+      </Section>
+
+      <Section title={t.settingsEmail.title}>
+        <EmailPref name="photo_review" label={t.settingsEmail.photoReview} initial={emailPrefs.photo_review !== false} />
       </Section>
 
       <Section title={t.settings.dataSection} lead={t.settings.dataLead}>
