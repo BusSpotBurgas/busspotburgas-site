@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { HoldersList, ProfileHeader } from "@/components/ProfileCard";
+import { BadgeList, RankProgress, StickerAlbum } from "@/components/Game";
+import { getSpotterGame } from "@/lib/game";
 import { getFleet } from "@/lib/fleet";
 import { FollowButton } from "@/components/Social";
 import { getCurrentUser } from "@/lib/auth";
@@ -32,6 +34,7 @@ async function Spotter({ params }: { params: PageProps<"/[lang]/spotter/[id]">["
   ]);
   const p = profile.data;
   if (!p || !p.display_name) notFound();
+  const game = await getSpotterGame(id);
   const numbers = ((holders.data ?? []) as unknown as { vehicles: { fleet_number: string; model_id: string } | null }[])
     .map((h) => h.vehicles)
     .filter((v): v is { fleet_number: string; model_id: string } => Boolean(v));
@@ -43,13 +46,24 @@ async function Spotter({ params }: { params: PageProps<"/[lang]/spotter/[id]">["
         avatar={p.avatar_url}
         tiktok={p.tiktok}
         isAdmin={p.role === "admin"}
-        rank={t.me.rank}
-        points={0}
+        rank={t.ranks[game.rank]}
+        points={game.total}
         pointsLabel={t.me.points}
       />
       <Suspense>
         <FollowSpotter id={id} label={t.social} />
       </Suspense>
+
+      <section className="grid gap-4 sm:grid-cols-[1fr_1.3fr]">
+        <div className="rounded-card border border-line bg-surface p-5 shadow-card">
+          <RankProgress total={game.total} rank={game.rank} t={t.game} ranks={t.ranks} />
+        </div>
+        <div className="rounded-card border border-line bg-surface p-5 shadow-card">
+          <h2 className="mb-3 font-display text-lg font-bold">🎫 {t.game.badges}</h2>
+          <BadgeList badges={game.badges} t={t.game} models={fleet.models} />
+        </div>
+      </section>
+
       <section>
         <h2 className="mb-3 font-display text-xl font-bold">{t.me.holders}</h2>
         <HoldersList
@@ -60,6 +74,12 @@ async function Spotter({ params }: { params: PageProps<"/[lang]/spotter/[id]">["
           noneLabel={t.me.noHolderModels}
         />
       </section>
+
+      <section className="rounded-card border border-line bg-surface p-5 shadow-card">
+        <h2 className="mb-3 font-display text-lg font-bold">📒 {t.game.album}</h2>
+        <StickerAlbum models={fleet.models} numbers={fleet.vehicles} collected={game.collected} lang={lang} t={t.game} />
+      </section>
+
     </div>
   );
 }

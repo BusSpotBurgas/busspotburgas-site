@@ -10,7 +10,7 @@ const fleet = JSON.parse(readFileSync(join(root, "data/fleet.json"), "utf8"));
 const meta = JSON.parse(readFileSync(join(root, "data/models-meta.json"), "utf8"));
 
 const q = (v) => (v == null ? "null" : `'${String(v).replace(/'/g, "''")}'`);
-const STATUSES = ["run", "new", "stop", "off", "scrapped"];
+const STATUSES = ["run", "new", "stop", "service", "off", "scrapped"];
 
 const modelRows = [];
 const vehicleRows = [];

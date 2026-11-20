@@ -29,7 +29,7 @@ export async function getHolderData(uid: string): Promise<HolderData> {
   );
 
   const vehicles: HolderVehicle[] = fleet.vehicles
-    .filter((v) => v.status === "run" || v.status === "new" || v.status === "stop")
+    .filter((v) => v.status === "run" || v.status === "new" || v.status === "stop" || v.status === "service")
     .map((v) => ({
       fleet_number: v.fleet_number,
       model_id: v.model_id,

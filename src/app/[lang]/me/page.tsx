@@ -3,6 +3,11 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { HoldersList, ProfileHeader } from "@/components/ProfileCard";
+import { BadgeList, RankProgress, StickerAlbum } from "@/components/Game";
+import { Confetti } from "@/components/GameClient";
+import { getFleet } from "@/lib/fleet";
+import { getSpotterGame } from "@/lib/game";
+import { createSessionClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/auth";
 import { signOutAction } from "@/lib/auth-actions";
 import { getHolderData } from "@/lib/holders";
@@ -26,7 +31,15 @@ export default async function MePage({ params }: PageProps<"/[lang]/me">) {
 async function Me({ lang }: { lang: Locale }) {
   const user = await requireUser(lang, `/${lang}/me`);
   if (user.profile.onboarding_step !== "done") redirect(`/${lang}/onboarding`);
-  const [t, data, activity] = await Promise.all([getDictionary(lang), getHolderData(user.id), getHoldersActivity(user.id)]);
+  const db = await createSessionClient();
+  const [t, data, activity, game, fleet, celebrate] = await Promise.all([
+    getDictionary(lang),
+    getHolderData(user.id),
+    getHoldersActivity(user.id),
+    getSpotterGame(user.id),
+    getFleet(),
+    db.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("type", ["badge", "rank"]).is("read_at", null),
+  ]);
   const hasActivity = activity.forMe.length + activity.mine.length + activity.elections.length > 0;
   const p = user.profile;
   const isAdmin = p.role === "admin";
@@ -41,8 +54,8 @@ async function Me({ lang }: { lang: Locale }) {
         avatar={p.avatar_url}
         tiktok={p.tiktok}
         isAdmin={isAdmin}
-        rank={t.me.rank}
-        points={0}
+        rank={t.ranks[game.rank]}
+        points={game.total}
         pointsLabel={t.me.points}
       />
 
@@ -108,6 +121,18 @@ async function Me({ lang }: { lang: Locale }) {
         </section>
       )}
 
+      <Confetti fire={(celebrate.count ?? 0) > 0} />
+
+      <section className="grid gap-4 sm:grid-cols-[1fr_1.3fr]">
+        <div className="rounded-card border border-line bg-surface p-5 shadow-card">
+          <RankProgress total={game.total} rank={game.rank} t={t.game} ranks={t.ranks} />
+        </div>
+        <div className="rounded-card border border-line bg-surface p-5 shadow-card">
+          <h2 className="mb-3 font-display text-lg font-bold">🎫 {t.game.badges}</h2>
+          <BadgeList badges={game.badges} t={t.game} models={fleet.models} />
+        </div>
+      </section>
+
       <section>
         <h2 className="mb-3 font-display text-xl font-bold">{t.me.holders}</h2>
         <HoldersList
@@ -118,6 +143,12 @@ async function Me({ lang }: { lang: Locale }) {
           noneLabel={t.me.noHolderModels}
         />
       </section>
+
+      <section className="rounded-card border border-line bg-surface p-5 shadow-card">
+        <h2 className="mb-3 font-display text-lg font-bold">📒 {t.game.album}</h2>
+        <StickerAlbum models={fleet.models} numbers={fleet.vehicles} collected={game.collected} lang={lang} t={t.game} />
+      </section>
+
     </div>
   );
 }

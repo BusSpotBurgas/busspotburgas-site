@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { BusSilhouette } from "@/components/BusSilhouette";
 import { IconArrow } from "@/components/icons";
 import { PhotoCard } from "@/components/PhotoCard";
+import { MonthlyBlock, PhotoOfMonthHero } from "@/components/Monthly";
+import { Suspense } from "react";
 import { getFleet } from "@/lib/fleet";
 import { getLatestPhotos } from "@/lib/photos";
 import { getDictionary, hasLocale } from "@/lib/i18n";
@@ -21,6 +23,9 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
 
   return (
     <>
+      <Suspense>
+        <PhotoOfMonthHero lang={lang} t={t} />
+      </Suspense>
       {/* Начало: тук в Етап 5 идва „Снимка на месеца“ */}
       <section className="relative overflow-hidden bg-gradient-to-b from-sea-50 to-canvas">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:py-16 lg:grid-cols-[1.1fr_1fr]">
@@ -67,6 +72,10 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           </div>
         </div>
       </section>
+
+      <Suspense>
+        <MonthlyBlock lang={lang} t={t} />
+      </Suspense>
 
       <section className="mx-auto max-w-6xl px-4 pt-6">
         <h2 className="font-display text-2xl font-bold tracking-tight">{t.home.latest}</h2>

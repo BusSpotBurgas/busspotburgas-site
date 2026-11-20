@@ -18,6 +18,7 @@ const STATUS_DOT: Record<VehicleStatus, string> = {
   run: "bg-run",
   new: "bg-new",
   stop: "bg-stop",
+  service: "bg-[#7C3AED]",
   off: "bg-off",
   scrapped: "bg-scrapped",
 };

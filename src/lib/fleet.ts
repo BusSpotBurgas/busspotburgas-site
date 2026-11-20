@@ -4,7 +4,10 @@ import { cacheLife, cacheTag } from "next/cache";
 import { createPublicClient } from "./supabase/server";
 import { hasSupabase } from "./supabase/env";
 
-export type VehicleStatus = "run" | "new" | "stop" | "off" | "scrapped";
+export type VehicleStatus = "run" | "new" | "stop" | "service" | "off" | "scrapped";
+
+/** Активни коли: могат да имат титуляри. */
+export const ACTIVE_STATUSES: VehicleStatus[] = ["run", "new", "stop", "service"];
 export type Silhouette = "12m" | "18m" | "9m" | "mini" | "trolley";
 
 export type Model = {

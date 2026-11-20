@@ -7,12 +7,24 @@ export type NotifData = {
   from?: string;
   winner?: string;
   accepted?: boolean;
+  badge?: string;
+  ref?: string;
+  rank?: string;
   invite?: number;
   election?: number;
   count?: number;
 };
 
 type L = "bg" | "en";
+
+const RANK_BG: Record<string, string> = { rookie: "Новак", spotter: "Спотър", veteran: "Ветеран", expert: "Експерт", legend: "Легенда" };
+const RANK_EN: Record<string, string> = { rookie: "Rookie", spotter: "Spotter", veteran: "Veteran", expert: "Expert", legend: "Legend" };
+function badgeText(d: NotifData, l: L) {
+  const r = d.ref ?? "";
+  const bg: Record<string, string> = { photos: `${r} снимки`, model: `целият модел`, night: "нощна снимка", rain: "дъждовна снимка", photo_of_month: `снимка на месеца ${r}`, spotter_of_month: `спотър на месеца ${r}` };
+  const en: Record<string, string> = { photos: `${r} photos`, model: "full model", night: "night photo", rain: "rain photo", photo_of_month: `photo of the month ${r}`, spotter_of_month: `spotter of the month ${r}` };
+  return (l === "bg" ? bg : en)[d.badge ?? ""] ?? d.badge ?? "";
+}
 
 const T: Record<string, (d: NotifData, l: L) => string> = {
   photo_approved: (d, l) => (l === "bg" ? `Снимката ти на ${d.fleet} е одобрена ✅` : `Your photo of ${d.fleet} is approved ✅`),
@@ -30,6 +42,10 @@ const T: Record<string, (d: NotifData, l: L) => string> = {
   owner_elected: (d, l) => (l === "bg" ? `${d.winner} е новият собственик на ${d.fleet}` : `${d.winner} is the new owner of ${d.fleet}`),
   holder_new_photo: (d, l) => (l === "bg" ? `Нова снимка на твоя ${d.fleet} от ${d.author} 📸` : `New photo of your ${d.fleet} by ${d.author} 📸`),
   follow_photo: (d, l) => (l === "bg" ? `${d.author} качи снимка на ${d.fleet}` : `${d.author} uploaded a photo of ${d.fleet}`),
+  badge: (d, l) => (l === "bg" ? `Нова значка: ${badgeText(d, l)} 🎫` : `New badge: ${badgeText(d, l)} 🎫`),
+  rank: (d, l) => (l === "bg" ? `Нов ранг: ${RANK_BG[d.rank ?? ""] ?? d.rank} 🎉` : `New rank: ${RANK_EN[d.rank ?? ""] ?? d.rank} 🎉`),
+  vehicle_scrapped: (d, l) =>
+    l === "bg" ? `${d.fleet} е бракувана – избери си друга кола за титуляр` : `${d.fleet} was scrapped – pick another vehicle`,
   admin_pending: (d, l) => (l === "bg" ? `Ново за одобрение (${d.count ?? 1})` : `New items to approve (${d.count ?? 1})`),
 };
 
@@ -39,7 +55,9 @@ export function notifText(type: string, data: NotifData, lang: L): string {
 
 export function notifHref(type: string, data: NotifData, lang: L): string {
   if (type === "admin_pending") return `/${lang}/admin/queue`;
+  if (type === "badge" || type === "rank") return `/${lang}/me`;
   if (type.startsWith("invite") || type.startsWith("owner_")) return `/${lang}/me#holders-activity`;
+  if (type === "vehicle_scrapped") return `/${lang}/settings/holders`;
   if (type === "photo_rejected") return `/${lang}/me/photos`;
   if (data.photo) return `/${lang}/photo/${data.photo}`;
   if (data.fleet) return `/${lang}/bus/${data.fleet}`;

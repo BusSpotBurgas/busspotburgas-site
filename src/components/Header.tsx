@@ -13,7 +13,7 @@ export function Header({ lang, t }: { lang: Locale; t: Dictionary }) {
     { href: `/${lang}/fleet`, label: t.nav.fleet },
     { href: null, label: t.nav.history },
     { href: null, label: t.nav.lines },
-    { href: null, label: t.nav.rankings },
+    { href: `/${lang}/rankings`, label: t.nav.rankings },
     { href: null, label: t.nav.live },
   ];
   return (
