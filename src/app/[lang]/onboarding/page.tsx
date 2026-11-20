@@ -23,7 +23,7 @@ async function Flow({ lang }: { lang: Locale }) {
     <Onboarding
       lang={lang}
       uid={user.id}
-      t={{ onboarding: t.onboarding, errors: t.errors, settings: t.settings, auth: t.auth }}
+      t={{ onboarding: t.onboarding, errors: t.errors, settings: t.settings, auth: t.auth, social: t.social }}
       step={user.profile.onboarding_step}
       profile={user.profile}
       models={data.models}

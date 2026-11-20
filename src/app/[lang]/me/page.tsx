@@ -6,6 +6,9 @@ import { HoldersList, ProfileHeader } from "@/components/ProfileCard";
 import { requireUser } from "@/lib/auth";
 import { signOutAction } from "@/lib/auth-actions";
 import { getHolderData } from "@/lib/holders";
+import { CancelInvite, InviteAnswer, VoteOwner } from "@/components/Social";
+import { fmt } from "@/lib/fmt";
+import { getHoldersActivity } from "@/lib/social";
 import { getDictionary, hasLocale, type Locale } from "@/lib/i18n";
 
 export const metadata: Metadata = { robots: { index: false } };
@@ -23,7 +26,8 @@ export default async function MePage({ params }: PageProps<"/[lang]/me">) {
 async function Me({ lang }: { lang: Locale }) {
   const user = await requireUser(lang, `/${lang}/me`);
   if (user.profile.onboarding_step !== "done") redirect(`/${lang}/onboarding`);
-  const [t, data] = await Promise.all([getDictionary(lang), getHolderData(user.id)]);
+  const [t, data, activity] = await Promise.all([getDictionary(lang), getHolderData(user.id), getHoldersActivity(user.id)]);
+  const hasActivity = activity.forMe.length + activity.mine.length + activity.elections.length > 0;
   const p = user.profile;
   const isAdmin = p.role === "admin";
 
@@ -62,6 +66,47 @@ async function Me({ lang }: { lang: Locale }) {
           <button className="rounded-xl px-4 py-2.5 text-sm font-semibold text-muted hover:text-scrapped">{t.nav.signOut}</button>
         </form>
       </div>
+
+      {hasActivity && (
+        <section id="holders-activity" className="space-y-3 rounded-card border border-sea-200 bg-sea-50/60 p-5">
+          <h2 className="font-display text-xl font-bold">🤝 {t.social.holdersActivity}</h2>
+          {activity.forMe.length > 0 && (
+            <div>
+              <p className="mb-2 text-sm font-semibold">{t.social.invitesForMe}</p>
+              <ul className="space-y-2">
+                {activity.forMe.map((i) => (
+                  <li key={i.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-surface p-3 text-sm">
+                    <span>
+                      <b>{i.profiles?.display_name}</b> → <Link href={`/${lang}/bus/${i.vehicles?.fleet_number}`} className="num font-bold text-sea-600">{i.vehicles?.fleet_number}</Link>
+                      {i.message && <span className="block text-muted">„{i.message}“</span>}
+                    </span>
+                    <InviteAnswer id={i.id} t={t.social} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {activity.elections.map((e) => (
+            <div key={e.id} className="rounded-xl bg-surface p-3 text-sm">
+              <p className="mb-2"><b>🗳 {t.social.vote}</b> · <span className="num font-bold">{e.fleet}</span> · <span className="text-muted">{fmt(t.social.votesUntil, { date: new Date(e.ends_at).toLocaleDateString(lang === "bg" ? "bg-BG" : "en-GB") })}</span></p>
+              <VoteOwner election={e.id} candidates={e.candidates} myVote={e.myVote} t={t.social} />
+            </div>
+          ))}
+          {activity.mine.length > 0 && (
+            <div>
+              <p className="mb-2 text-sm font-semibold">{t.social.myRequests}</p>
+              <ul className="space-y-1 text-sm">
+                {activity.mine.map((i) => (
+                  <li key={i.id} className="flex items-center justify-between gap-2">
+                    <span><span className="num font-bold">{i.vehicles?.fleet_number}</span> · <span className="text-muted">{t.social.waiting}</span></span>
+                    <CancelInvite id={i.id} t={t.social} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </section>
+      )}
 
       <section>
         <h2 className="mb-3 font-display text-xl font-bold">{t.me.holders}</h2>

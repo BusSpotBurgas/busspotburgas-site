@@ -7,6 +7,8 @@ import { fmt } from "@/lib/fmt";
 import { requireUser } from "@/lib/auth";
 import { getDictionary, hasLocale, type Locale } from "@/lib/i18n";
 import { getQueue } from "@/lib/photos";
+import { CommentReview, DescriptionReview, ElectionDecide, ReportResolve } from "@/components/AdminSocial";
+import { getAdminSocialQueue } from "@/lib/social";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
@@ -35,7 +37,8 @@ async function Queue({ lang }: { lang: Locale }) {
       </div>
     );
   }
-  const { photos, claims, usage } = await getQueue();
+  const [{ photos, claims, usage }, social] = await Promise.all([getQueue(), getAdminSocialQueue()]);
+  const labels = { approve: t.adminQ.approve, reject: t.adminQ.reject };
   const used = usage.reduce((s, u) => s + Number(u.bytes), 0);
   const pct = Math.min(100, (used / GB) * 100);
 
@@ -64,6 +67,70 @@ async function Queue({ lang }: { lang: Locale }) {
           ))}
         </ul>
       )}
+
+      <section className="rounded-card border border-line bg-surface p-4 shadow-card">
+        <h2 className="mb-3 font-display text-lg font-bold">💬 {t.adminQ.comments} <span className="text-muted">· {social.comments.length}</span></h2>
+        {social.comments.length === 0 ? <p className="text-sm text-muted">{t.adminQ.none}</p> : (
+          <ul className="divide-y divide-line text-sm">
+            {social.comments.map((c) => (
+              <li key={c.id} className="flex flex-wrap items-start justify-between gap-2 py-2">
+                <span className="min-w-0 flex-1">
+                  <b>{c.profiles?.display_name}</b> · <Link href={`/${lang}/photo/${c.photo_id}`} className="num text-sea-600">{c.photos?.vehicles?.fleet_number}</Link>
+                  <span className="block whitespace-pre-line break-words">{c.body}</span>
+                </span>
+                <CommentReview id={c.id} labels={labels} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="rounded-card border border-line bg-surface p-4 shadow-card">
+        <h2 className="mb-3 font-display text-lg font-bold">📝 {t.adminQ.descriptions} <span className="text-muted">· {social.descriptions.length}</span></h2>
+        {social.descriptions.length === 0 ? <p className="text-sm text-muted">{t.adminQ.none}</p> : (
+          <ul className="divide-y divide-line text-sm">
+            {social.descriptions.map((d) => (
+              <li key={d.vehicle_id} className="flex flex-wrap items-start justify-between gap-2 py-2">
+                <span className="min-w-0 flex-1">
+                  <Link href={`/${lang}/bus/${d.fleet_number}`} className="num font-bold text-sea-600">{d.fleet_number}</Link> · <b>{d.author}</b>
+                  <span className="block whitespace-pre-line break-words">{d.pending || "—"}</span>
+                  {d.approved && <span className="block text-xs text-muted">{t.adminQ.current}: {d.approved}</span>}
+                </span>
+                <DescriptionReview vehicleId={d.vehicle_id} fleet={d.fleet_number} labels={labels} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="rounded-card border border-line bg-surface p-4 shadow-card">
+        <h2 className="mb-1 font-display text-lg font-bold">🗳 {t.adminQ.elections} <span className="text-muted">· {social.elections.length}</span></h2>
+        <p className="mb-3 text-xs text-muted">{t.adminQ.electionsLead}</p>
+        {social.elections.length === 0 ? <p className="text-sm text-muted">{t.adminQ.none}</p> : (
+          <ul className="space-y-2 text-sm">
+            {social.elections.map((e) => (
+              <li key={e.id} className="space-y-1">
+                <Link href={`/${lang}/bus/${e.fleet}`} className="num font-bold text-sea-600">{e.fleet}</Link>
+                <ElectionDecide id={e.id} candidates={e.candidates} label={t.adminQ.choose} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="rounded-card border border-line bg-surface p-4 shadow-card">
+        <h2 className="mb-3 font-display text-lg font-bold">🚩 {t.adminQ.reports} <span className="text-muted">· {social.reports.length}</span></h2>
+        {social.reports.length === 0 ? <p className="text-sm text-muted">{t.adminQ.none}</p> : (
+          <ul className="divide-y divide-line text-sm">
+            {social.reports.map((r) => (
+              <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                <span><b>{r.profiles?.display_name}</b> → {r.target_type} #{r.target_id.slice(0, 8)}{r.reason ? ` – ${r.reason}` : ""}</span>
+                <ReportResolve id={r.id} label={t.adminQ.resolve} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section className="rounded-card border border-line bg-surface p-4 shadow-card">
         <h2 className="mb-3 font-display text-lg font-bold">{t.queue.claims}</h2>

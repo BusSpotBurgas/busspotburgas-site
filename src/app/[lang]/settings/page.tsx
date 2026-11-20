@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 import { ProfileForm } from "@/components/ProfileForm";
 import { DeleteAccount, DownloadData, EmailPref } from "@/components/SettingsParts";
+import { PushToggle } from "@/components/Push";
 import { createSessionClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/auth";
 import { getDictionary, hasLocale, type Locale } from "@/lib/i18n";
@@ -55,7 +56,14 @@ async function Settings({ lang }: { lang: Locale }) {
       </Section>
 
       <Section title={t.settingsEmail.title}>
-        <EmailPref name="photo_review" label={t.settingsEmail.photoReview} initial={emailPrefs.photo_review !== false} />
+        <div className="space-y-3">
+          <EmailPref name="photo_review" label={t.settingsEmail.photoReview} initial={emailPrefs.photo_review !== false} />
+          <EmailPref name="owner_vote" label={t.notif.ownerVoteEmail} initial={emailPrefs.owner_vote !== false} />
+        </div>
+      </Section>
+
+      <Section title={t.notif.pushTitle}>
+        <PushToggle t={t.notif} />
       </Section>
 
       <Section title={t.settings.dataSection} lead={t.settings.dataLead}>
