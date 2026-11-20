@@ -29,7 +29,7 @@ async function Holders({ lang }: { lang: Locale }) {
       </Link>
       <h1 className="mt-2 font-display text-3xl font-extrabold">{t.onboarding.holdersTitle}</h1>
       <p className="mt-2 mb-6 text-sm text-muted">{t.onboarding.holdersLead}</p>
-      <HoldersEditor models={data.models} vehicles={data.vehicles} noHolder={data.noHolder} t={{ onboarding: t.onboarding, errors: t.errors }} />
+      <HoldersEditor models={data.models} vehicles={data.vehicles} noHolder={data.noHolder} t={{ onboarding: t.onboarding, errors: t.errors, social: t.social }} />
     </div>
   );
 }

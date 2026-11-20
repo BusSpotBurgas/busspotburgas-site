@@ -1,7 +1,7 @@
 // Service worker на busspotburgas.
 // Етап 1: прави сайта инсталируем и показва запазена страница без интернет.
-// Push известията се добавят в Етап 4.
-const CACHE = "busspot-v1";
+// Етап 4: push известия (показване + отваряне на правилната страница).
+const CACHE = "busspot-v2";
 const OFFLINE = "/offline.html";
 
 self.addEventListener("install", (event) => {
@@ -51,4 +51,38 @@ self.addEventListener("fetch", (event) => {
       )
     );
   }
+});
+
+// ── Push известия ────────────────────────────────────────────────
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { body: event.data ? event.data.text() : "" };
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title || "busspotburgas", {
+      body: data.body || "",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      data: { url: data.url || "/" },
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = new URL(event.notification.data?.url || "/", self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if (c.url.startsWith(self.location.origin) && "focus" in c) {
+          c.navigate(url);
+          return c.focus();
+        }
+      }
+      return self.clients.openWindow(url);
+    })
+  );
 });

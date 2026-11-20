@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { getCurrentUser } from "@/lib/auth";
+import { getUnreadCount } from "@/lib/social";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { IconBell, IconSearch } from "./icons";
 import { Logo } from "./Logo";
@@ -35,15 +36,9 @@ export function Header({ lang, t }: { lang: Locale; t: Dictionary }) {
               className="w-44 bg-transparent outline-none placeholder:text-muted/70 xl:w-56"
             />
           </label>
-          <button
-            type="button"
-            disabled
-            title={t.nav.soon}
-            aria-label={t.nav.notifications}
-            className="grid size-9 place-items-center rounded-full text-muted hover:bg-canvas"
-          >
-            <IconBell className="size-5" />
-          </button>
+          <Suspense fallback={<span className="grid size-9 place-items-center text-muted"><IconBell className="size-5" /></span>}>
+            <Bell lang={lang} label={t.nav.notifications} />
+          </Suspense>
           <Suspense fallback={<LangSwitchView lang={lang} label={t.nav.language} pathname={`/${lang}`} />}>
             <LangSwitch lang={lang} label={t.nav.language} />
           </Suspense>
@@ -53,6 +48,26 @@ export function Header({ lang, t }: { lang: Locale; t: Dictionary }) {
         </div>
       </div>
     </header>
+  );
+}
+
+/** Камбанката с брояча на непрочетените известия. */
+async function Bell({ lang, label }: { lang: Locale; label: string }) {
+  const user = await getCurrentUser();
+  const count = user ? await getUnreadCount(user.id) : 0;
+  return (
+    <Link
+      href={user ? `/${lang}/notifications` : `/${lang}/login`}
+      aria-label={count ? `${label} (${count})` : label}
+      className="relative grid size-9 place-items-center rounded-full text-muted hover:bg-canvas hover:text-ink"
+    >
+      <IconBell className="size-5" />
+      {count > 0 && (
+        <span className="absolute -right-0.5 -top-0.5 grid min-w-4.5 place-items-center rounded-full bg-scrapped px-1 text-[10px] font-bold leading-4.5 text-white">
+          {count > 99 ? "99+" : count}
+        </span>
+      )}
+    </Link>
   );
 }
 

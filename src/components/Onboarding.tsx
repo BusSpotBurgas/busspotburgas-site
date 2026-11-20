@@ -10,7 +10,7 @@ import { HolderPicker, type HolderVehicle } from "./HolderPicker";
 import { ProfileForm } from "./ProfileForm";
 import { Check, FormError, Submit, fmt } from "./ui";
 
-type T = Pick<Dictionary, "onboarding" | "errors" | "settings" | "auth">;
+type T = Pick<Dictionary, "onboarding" | "errors" | "settings" | "auth"> & { social?: Dictionary["social"] };
 type ErrKey = keyof Dictionary["errors"];
 
 const TOUR_ICONS = ["📸", "🤝", "🏆", "📍"];

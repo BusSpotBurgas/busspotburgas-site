@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ClaimButton, DownloadOriginal, SwipeNav } from "@/components/PhotoClient";
+import { Comments, FollowButton, LikeButton } from "@/components/Social";
+import { getPhotoSocial, getViewerPhoto } from "@/lib/social";
 import { getCurrentUser } from "@/lib/auth";
 import { getDictionary, hasLocale, type Dictionary, type Locale } from "@/lib/i18n";
 import { publicPhotoUrl } from "@/lib/photo-shared";
@@ -93,8 +95,8 @@ async function Photo({ params }: { params: PageProps<"/[lang]/photo/[id]">["para
           {/* Текстовете на потребителите – само като обикновен текст */}
           {p.description && <p className="whitespace-pre-line rounded-card border border-line bg-surface p-4 text-sm shadow-card">{p.description}</p>}
 
-          <Suspense>
-            <Viewer photoId={p.id} authorId={p.user_id} t={t} />
+          <Suspense fallback={<div className="h-10" />}>
+            <Viewer photoId={p.id} authorId={p.user_id} t={t} lang={lang} />
           </Suspense>
         </div>
       </div>
@@ -102,10 +104,22 @@ async function Photo({ params }: { params: PageProps<"/[lang]/photo/[id]">["para
   );
 }
 
-/** Бутони според това кой гледа: авторът сваля оригинала, другите могат да заявят авторство. */
-async function Viewer({ photoId, authorId, t }: { photoId: string; authorId: string | null; t: Dictionary }) {
-  const user = await getCurrentUser();
-  if (!user) return null;
-  if (user.id === authorId) return <DownloadOriginal id={photoId} label={t.photo.download} />;
-  return <ClaimButton id={photoId} t={t.photo} />;
+/** Харесване, коментари и бутони според това кой гледа. */
+async function Viewer({ photoId, authorId, t, lang }: { photoId: string; authorId: string | null; t: Dictionary; lang: string }) {
+  const [user, social] = await Promise.all([getCurrentUser(), getPhotoSocial(photoId)]);
+  const view = user ? await getViewerPhoto(user.id, photoId) : { liked: false, pending: [], followsAuthor: false };
+  const isAuthor = Boolean(user && user.id === authorId);
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center gap-3">
+        <LikeButton photoId={photoId} liked={view.liked} count={social.likes} t={t.social} canLike={Boolean(user)} />
+        {user && authorId && !isAuthor && <FollowButton type="spotter" id={authorId} following={view.followsAuthor} t={t.social} />}
+        {isAuthor && <DownloadOriginal id={photoId} label={t.photo.download} />}
+        {user && !isAuthor && <ClaimButton id={photoId} t={t.photo} />}
+      </div>
+      <div className="rounded-card border border-line bg-surface p-5 shadow-card">
+        <Comments photoId={photoId} comments={social.comments} pending={view.pending} uid={user?.id ?? null} lang={lang} t={t.social} />
+      </div>
+    </div>
+  );
 }

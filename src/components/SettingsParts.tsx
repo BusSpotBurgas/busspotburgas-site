@@ -17,7 +17,7 @@ export function HoldersEditor({
   models: Model[];
   vehicles: HolderVehicle[];
   noHolder: string[];
-  t: Pick<Dictionary, "onboarding" | "errors">;
+  t: Pick<Dictionary, "onboarding" | "errors"> & { social?: Dictionary["social"] };
 }) {
   const [vehicles, setVehicles] = useState(initial);
   const [none, setNone] = useState(new Set(noHolder));

@@ -3,6 +3,7 @@
 import { updateTag } from "next/cache";
 import { getCurrentUser } from "./auth";
 import { layout, sendMail, SITE } from "./mail";
+import { notifyUsers, pingAdmins } from "./notify";
 import {
   FILE_LIMITS,
   LINE_RE,
@@ -78,6 +79,31 @@ async function publish(uid: string | null, id: string) {
 
 async function unpublish(id: string) {
   await createAdminClient().storage.from("photos-public").remove([`${id}/display`, `${id}/thumb`]);
+}
+
+/** След одобрение: автор (камбанка), титуляри на колата и последователи на автора/колата. */
+async function fanOutApproved(photoId: string) {
+  try {
+    const admin = createAdminClient();
+    const { data: p } = await admin.from("photos").select("user_id,author_name,vehicle_id,vehicles(fleet_number)").eq("id", photoId).single();
+    if (!p) return;
+    const fleet = (p.vehicles as unknown as { fleet_number: string } | null)?.fleet_number ?? "";
+    const data = { fleet, photo: photoId, author: p.author_name ?? "" };
+    const [{ data: holders }, { data: followers }] = await Promise.all([
+      admin.from("vehicle_holders").select("user_id").eq("vehicle_id", p.vehicle_id),
+      admin
+        .from("follows")
+        .select("user_id")
+        .or(`and(target_type.eq.vehicle,target_id.eq.${fleet}),and(target_type.eq.spotter,target_id.eq.${p.user_id ?? "-"})`),
+    ]);
+    const holderIds = (holders ?? []).map((h) => h.user_id as string).filter((id) => id !== p.user_id);
+    const followerIds = (followers ?? []).map((f) => f.user_id as string).filter((id) => id !== p.user_id && !holderIds.includes(id));
+    await notifyUsers([p.user_id], "photo_approved", data);
+    await notifyUsers(holderIds, "holder_new_photo", data);
+    await notifyUsers(followerIds, "follow_photo", data);
+  } catch (e) {
+    console.error("fanout:", e);
+  }
 }
 
 function refresh() {
@@ -157,6 +183,9 @@ export async function submitPhotoAction(input: {
   if (row.status === "approved") {
     await publish(user.id, row.id); // снимка на админа – веднага
     refresh();
+    await fanOutApproved(row.id);
+  } else {
+    await pingAdmins(); // push до админите: ново за одобрение
   }
   return { ok: true, id: row.id, status: row.status };
 }
@@ -177,7 +206,9 @@ export async function editPhotoAction(id: string, input: { fleet: string; kind: 
     .from("photos")
     .update({ vehicle_id: v.id, kind, line, place, ad: clean(input.ad, 80) || null, description: clean(input.description, 500) || null })
     .eq("id", id);
-  return error ? { error: "generic" } : { ok: true };
+  if (error) return { error: "generic" };
+  await pingAdmins();
+  return { ok: true };
 }
 
 export async function deletePhotoAction(id: string): Promise<ActionResult> {
@@ -293,6 +324,7 @@ export async function approvePhotoAction(id: string, flags: { night: boolean; ra
   if (error || !p) return { error: "generic" };
   await publish(p.user_id, id);
   refresh();
+  await fanOutApproved(id);
   await notifyAuthor(id, "approved");
   return { ok: true };
 }
@@ -308,6 +340,8 @@ export async function rejectPhotoAction(id: string, reason: string, note: string
   if (error) return { error: "generic" };
   await unpublish(id);
   refresh();
+  const { data: who } = await db.from("photos").select("user_id,vehicles(fleet_number)").eq("id", id).single();
+  await notifyUsers([who?.user_id], "photo_rejected", { fleet: (who?.vehicles as unknown as { fleet_number: string } | null)?.fleet_number ?? "" });
   await notifyAuthor(id, "rejected");
   return { ok: true };
 }
@@ -323,6 +357,8 @@ export async function adminEditPhotoAction(id: string, fleet: string, line: stri
   if (!v) return { error: "vehicle" };
   const { error } = await db.from("photos").update({ vehicle_id: v.id, line: l, edited_by_admin: true }).eq("id", id);
   if (error) return { error: "generic" };
+  const { data: who } = await db.from("photos").select("user_id").eq("id", id).single();
+  await notifyUsers([who?.user_id], "photo_edited", { fleet: clean(fleet, 10), photo: id });
   await notifyAuthor(id, "edited");
   return { ok: true };
 }

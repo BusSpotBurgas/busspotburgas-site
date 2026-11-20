@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { HoldersList, ProfileHeader } from "@/components/ProfileCard";
 import { getFleet } from "@/lib/fleet";
+import { FollowButton } from "@/components/Social";
+import { getCurrentUser } from "@/lib/auth";
+import { createSessionClient } from "@/lib/supabase/server";
 import { getDictionary, hasLocale, type Locale } from "@/lib/i18n";
 import { createPublicClient } from "@/lib/supabase/server";
 
@@ -44,6 +47,9 @@ async function Spotter({ params }: { params: PageProps<"/[lang]/spotter/[id]">["
         points={0}
         pointsLabel={t.me.points}
       />
+      <Suspense>
+        <FollowSpotter id={id} label={t.social} />
+      </Suspense>
       <section>
         <h2 className="mb-3 font-display text-xl font-bold">{t.me.holders}</h2>
         <HoldersList
@@ -56,4 +62,12 @@ async function Spotter({ params }: { params: PageProps<"/[lang]/spotter/[id]">["
       </section>
     </div>
   );
+}
+
+async function FollowSpotter({ id, label }: { id: string; label: Awaited<ReturnType<typeof getDictionary>>["social"] }) {
+  const user = await getCurrentUser();
+  if (!user || user.id === id) return null;
+  const db = await createSessionClient();
+  const { data } = await db.from("follows").select("target_id").eq("user_id", user.id).eq("target_type", "spotter").eq("target_id", id).maybeSingle();
+  return <FollowButton type="spotter" id={id} following={Boolean(data)} t={label} />;
 }
