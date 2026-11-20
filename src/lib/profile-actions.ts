@@ -1,5 +1,6 @@
 "use server";
 
+import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import type { OnboardingStep } from "./auth";
 import { supabaseUrl } from "./supabase/env";
@@ -65,6 +66,11 @@ export type HolderResult = "owner" | "already" | "taken" | "inactive" | "not_fou
 export async function claimVehicleAction(fleet: string): Promise<HolderResult> {
   const { db } = await session();
   const { data, error } = await db.rpc("claim_vehicle", { p_fleet_number: String(fleet).slice(0, 10) });
+  if (!error) {
+    // страницата на колата и автопаркът да покажат новия титуляр веднага
+    updateTag(`vehicle:${String(fleet).slice(0, 10)}`);
+    updateTag("fleet");
+  }
   return error ? "error" : (data as HolderResult);
 }
 
