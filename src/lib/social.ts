@@ -165,7 +165,7 @@ export async function getNotifications(uid: string) {
 /** Всичко за админ опашката от Етап 4. */
 export async function getAdminSocialQueue() {
   const db = await createSessionClient();
-  const [comments, descriptions, reports, elections] = await Promise.all([
+  const [comments, descriptions, reports, elections, videos] = await Promise.all([
     db
       .from("photo_comments")
       .select("id,photo_id,body,created_at,profiles(display_name),photos(vehicles(fleet_number))")
@@ -175,6 +175,7 @@ export async function getAdminSocialQueue() {
     db.rpc("admin_pending_descriptions"),
     db.from("reports").select("id,target_type,target_id,reason,created_at,profiles(display_name)").eq("resolved", false).order("created_at"),
     db.from("owner_elections").select("id,vehicle_id,status,ends_at,vehicles(fleet_number)").eq("status", "admin"),
+    db.from("videos").select("id,url,provider,created_at,vehicles(fleet_number),profiles(display_name)").eq("status", "pending").order("created_at"),
   ]);
   const els = await Promise.all(
     (elections.data ?? []).map(async (e) => {
@@ -198,5 +199,6 @@ export async function getAdminSocialQueue() {
     descriptions: (descriptions.data ?? []) as { vehicle_id: number; fleet_number: string; pending: string | null; approved: string | null; author: string | null }[],
     reports: (reports.data ?? []) as unknown as { id: number; target_type: string; target_id: string; reason: string | null; created_at: string; profiles: { display_name: string | null } | null }[],
     elections: els,
+    videos: (videos.data ?? []) as unknown as { id: number; url: string; provider: string; created_at: string; vehicles: { fleet_number: string } | null; profiles: { display_name: string | null } | null }[],
   };
 }

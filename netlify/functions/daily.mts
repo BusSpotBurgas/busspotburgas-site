@@ -53,19 +53,29 @@ ${SITE}/bg/me#holders-activity` });
   const { data: due } = await db.from("owner_elections").select("id").eq("status", "open").lt("ends_at", new Date().toISOString());
   for (const e of due ?? []) await db.rpc("resolve_election", { p_election: e.id });
 
+  // 7) На 1-во число (българско време) – снимка и спотър на изминалия месец
+  const sofia = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Sofia" }));
+  if (sofia.getDate() === 1) {
+    const prev = new Date(sofia.getFullYear(), sofia.getMonth() - 1, 1);
+    const month = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, "0")}-01`;
+    const { error } = await db.rpc("decide_month", { p_month: month });
+    if (error) console.error("decide_month:", error.message);
+  }
+
   // 6) Стари известия (над 90 дни)
   await db.from("notifications").delete().lt("created_at", new Date(Date.now() - 90 * day).toISOString());
   if (notes.length) await db.from("notifications").insert(notes);
 
   // 1) + 3) Обобщение за админите
   const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
-  const [{ count: pending }, { count: claims }, { count: newUsers }, usage, { count: comments }, { count: reports }] = await Promise.all([
+  const [{ count: pending }, { count: claims }, { count: newUsers }, usage, { count: comments }, { count: reports }, { count: videos }] = await Promise.all([
     db.from("photos").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("photo_claims").select("id", { count: "exact", head: true }).eq("resolved", false),
     db.from("profiles").select("id", { count: "exact", head: true }).gte("created_at", since),
     db.rpc("storage_usage"),
     db.from("photo_comments").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("reports").select("id", { count: "exact", head: true }).eq("resolved", false),
+    db.from("videos").select("id", { count: "exact", head: true }).eq("status", "pending"),
   ]);
   const used = ((usage.data ?? []) as { bytes: number }[]).reduce((s, u) => s + Number(u.bytes), 0);
   const pct = Math.round((used / GB) * 100);
@@ -78,7 +88,7 @@ ${SITE}/bg/me#holders-activity` });
   for (const m of mails) {
     await transport?.sendMail({ from: `"busspotburgas" <${process.env.GMAIL_USER ?? "busspotburgas@gmail.com"}>`, ...m }).catch(() => {});
   }
-  if (pass && ((pending ?? 0) > 0 || (claims ?? 0) > 0 || (comments ?? 0) > 0 || (reports ?? 0) > 0 || lowSpace)) {
+  if (pass && ((pending ?? 0) > 0 || (claims ?? 0) > 0 || (comments ?? 0) > 0 || (reports ?? 0) > 0 || (videos ?? 0) > 0 || lowSpace)) {
     const { data: admins } = await db.from("profiles").select("id").eq("role", "admin");
     const emails: string[] = [];
     for (const a of admins ?? []) {
@@ -91,6 +101,7 @@ ${SITE}/bg/me#holders-activity` });
         `Спорове за авторство: ${claims ?? 0}`,
         `Коментари за одобрение: ${comments ?? 0}`,
         `Докладвания: ${reports ?? 0}`,
+        `Видео връзки за одобрение: ${videos ?? 0}`,
         `Нови спотъри за 24 ч: ${newUsers ?? 0}`,
         `Място за снимки: ${(used / 1024 ** 2).toFixed(0)} MB от 1 GB (${pct}%)${lowSpace ? " – СВЪРШВА!" : ""}`,
         `Изтрити стари отказани снимки: ${old?.length ?? 0}`,

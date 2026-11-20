@@ -3,7 +3,7 @@
 import { updateTag } from "next/cache";
 import { getCurrentUser } from "./auth";
 import { layout, sendMail, SITE } from "./mail";
-import { notifyUsers, pingAdmins } from "./notify";
+import { deliver, notifyUsers, pingAdmins } from "./notify";
 import {
   FILE_LIMITS,
   LINE_RE,
@@ -99,6 +99,12 @@ async function fanOutApproved(photoId: string) {
     const holderIds = (holders ?? []).map((h) => h.user_id as string).filter((id) => id !== p.user_id);
     const followerIds = (followers ?? []).map((f) => f.user_id as string).filter((id) => id !== p.user_id && !holderIds.includes(id));
     await notifyUsers([p.user_id], "photo_approved", data);
+    // Значки и рангове: базата ги записва сама – тук само пращаме push
+    if (p.user_id) {
+      const since = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+      const { data: fresh } = await admin.from("notifications").select("type,data").eq("user_id", p.user_id).in("type", ["badge", "rank"]).gte("created_at", since);
+      for (const n of fresh ?? []) await deliver([p.user_id], n.type as string, n.data as Record<string, string>);
+    }
     await notifyUsers(holderIds, "holder_new_photo", data);
     await notifyUsers(followerIds, "follow_photo", data);
   } catch (e) {

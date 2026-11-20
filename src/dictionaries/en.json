@@ -457,5 +457,97 @@
     "resolve": "Resolved",
     "none": "Nothing.",
     "current": "Current"
+  },
+  "ranks": {
+    "rookie": "Rookie",
+    "spotter": "Spotter",
+    "veteran": "Veteran",
+    "expert": "Expert",
+    "legend": "Legend"
+  },
+  "game": {
+    "points": "points",
+    "nextRank": "To \"{rank}\": {n} more pts",
+    "maxRank": "Highest rank! 🏆",
+    "badges": "Badges",
+    "noBadges": "No badges yet. Upload photos to collect them!",
+    "album": "Album",
+    "albumOf": "{n} of {total} vehicles",
+    "badgeNames": {
+      "photos": "{ref} photos",
+      "model": "Full {ref}",
+      "night": "Night photo",
+      "rain": "Rain photo",
+      "photo_of_month": "Photo of the month {ref}",
+      "spotter_of_month": "Spotter of the month {ref}"
+    },
+    "rankingsTitle": "Rankings",
+    "rankingsLead": "Who is the most active Burgasbus spotter?",
+    "tabMonth": "This month",
+    "tabAll": "All time",
+    "tabModel": "By model",
+    "tabCollection": "Most complete collection",
+    "scorePoints": "pts",
+    "scorePhotos": "photos",
+    "scoreVehicles": "vehicles",
+    "empty": "No ranked spotters yet.",
+    "adminBadge": "Admin",
+    "howTitle": "How to earn points",
+    "how": [
+      [
+        "Approved photo",
+        "+10"
+      ],
+      [
+        "First photo of a vehicle on the site",
+        "+20"
+      ],
+      [
+        "Parked or new vehicle",
+        "+15"
+      ],
+      [
+        "Approved video link",
+        "+5"
+      ],
+      [
+        "Rating a bus (once per vehicle)",
+        "+2"
+      ],
+      [
+        "Approved comment",
+        "+1"
+      ],
+      [
+        "Photo of the month",
+        "+50"
+      ]
+    ],
+    "potmTitle": "Photo of the month",
+    "potmBy": "by {author}",
+    "potmVote": "Vote for the photo of the month",
+    "potmVoteLead": "The last 3 days of the month: pick the best of the top 5. One vote, not for your own photo.",
+    "potmVoteBtn": "Vote",
+    "potmVoted": "✓ Your vote",
+    "potmOwn": "Your photo",
+    "potmLogin": "Log in to vote.",
+    "potmSoon": "Voting is open in the last 3 days of the month.",
+    "likes": "likes",
+    "votes": "votes",
+    "sotmTitle": "Spotter of the month",
+    "topSpotters": "Top spotters",
+    "createProfile": "Create a profile"
+  },
+  "video": {
+    "tab": "Video",
+    "add": "Add a video link",
+    "placeholder": "https://www.youtube.com/… or https://www.tiktok.com/…",
+    "send": "Send",
+    "sent": "Sent for approval. +5 pts once approved.",
+    "invalid": "Only YouTube or TikTok links.",
+    "duplicate": "This link was already added.",
+    "none": "No videos yet.",
+    "open": "Watch on TikTok",
+    "queue": "Video links"
   }
 }

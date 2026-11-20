@@ -15,6 +15,8 @@ import { PHOTO_KINDS, publicPhotoUrl } from "@/lib/photo-shared";
 import { getVehiclePage, type Holder } from "@/lib/photos";
 import { adsTimeline, getVehicleSocial, getViewerVehicle, type RatingStats } from "@/lib/social";
 import { createSessionClient } from "@/lib/supabase/server";
+import { VideoForm } from "@/components/GameClient";
+import { getVehicleVideos, youtubeId, type Video } from "@/lib/game";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/bus/[number]">): Promise<Metadata> {
   const { number } = await params;
@@ -90,7 +92,7 @@ async function Bus({ params }: { params: PageProps<"/[lang]/bus/[number]">["para
   const [t, data, fleet] = await Promise.all([getDictionary(lang as Locale), getVehiclePage(number), getFleet()]);
   if (!data) notFound();
   const { vehicle: v, photos, holders } = data;
-  const social = await getVehicleSocial(v.id, v.fleet_number);
+  const [social, videos] = await Promise.all([getVehicleSocial(v.id, v.fleet_number), getVehicleVideos(v.id, v.fleet_number)]);
   const model = fleet.models.find((m) => m.id === v.model_id);
   const hero = photos.find((p) => p.kind === "exterior") ?? photos[0];
   const owner = holders.find((h) => h.role === "owner");
@@ -212,9 +214,8 @@ async function Bus({ params }: { params: PageProps<"/[lang]/bus/[number]">["para
           <h2 className="mb-3 font-display text-lg font-bold">
             {t.bus.gallery} <span className="text-muted">· {photos.length}</span>
           </h2>
-          {photos.length === 0 ? (
-            <p className="rounded-card border border-line bg-surface p-6 text-center text-muted">{t.bus.noPhotos}</p>
-          ) : (
+          {photos.length === 0 && <p className="mb-4 rounded-card border border-line bg-surface p-6 text-center text-muted">{t.bus.noPhotos}</p>}
+          {(
             <GalleryTabs
               tabs={[
                 ...PHOTO_KINDS.map((k) => {
@@ -234,7 +235,19 @@ async function Bus({ params }: { params: PageProps<"/[lang]/bus/[number]">["para
                     ),
                   };
                 }),
-                { id: "video", label: t.bus.video, content: <p className="text-sm text-muted">{t.bus.videoSoon}</p> },
+                {
+                  id: "video",
+                  label: t.video.tab,
+                  count: videos.length,
+                  content: (
+                    <div className="space-y-4">
+                      <VideoList videos={videos} t={t} />
+                      <Suspense>
+                        <ViewerVideoForm fleet={v.fleet_number} t={t} />
+                      </Suspense>
+                    </div>
+                  ),
+                },
               ]}
             />
           )}
@@ -300,4 +313,39 @@ async function ViewerRating({ vehicleId, fleet, lang, t }: { vehicleId: number; 
   }
   const view = await getViewerVehicle(user.id, vehicleId, fleet);
   return <RateForm fleet={fleet} initial={view.rating} t={t.social} />;
+}
+
+function VideoList({ videos, t }: { videos: Video[]; t: Dictionary }) {
+  if (!videos.length) return <p className="text-sm text-muted">{t.video.none}</p>;
+  return (
+    <ul className="grid gap-3 sm:grid-cols-2">
+      {videos.map((v) => {
+        const yt = v.provider === "youtube" ? youtubeId(v.url) : null;
+        return (
+          <li key={v.id} className="overflow-hidden rounded-card border border-line bg-surface shadow-card">
+            {yt ? (
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${yt}`}
+                title="YouTube"
+                loading="lazy"
+                allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="aspect-video w-full"
+              />
+            ) : (
+              <a href={v.url} target="_blank" rel="noopener noreferrer nofollow" className="flex aspect-video items-center justify-center gap-2 bg-ink font-semibold text-white">
+                ▶ {t.video.open}
+              </a>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+async function ViewerVideoForm({ fleet, t }: { fleet: string; t: Dictionary }) {
+  const user = await getCurrentUser();
+  if (!user || !user.emailConfirmed) return null;
+  return <VideoForm fleet={fleet} t={t.video} />;
 }

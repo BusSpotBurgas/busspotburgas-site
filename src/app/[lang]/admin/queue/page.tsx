@@ -9,6 +9,7 @@ import { getDictionary, hasLocale, type Locale } from "@/lib/i18n";
 import { getQueue } from "@/lib/photos";
 import { CommentReview, DescriptionReview, ElectionDecide, ReportResolve } from "@/components/AdminSocial";
 import { getAdminSocialQueue } from "@/lib/social";
+import { VideoReview } from "@/components/GameClient";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
@@ -79,6 +80,23 @@ async function Queue({ lang }: { lang: Locale }) {
                   <span className="block whitespace-pre-line break-words">{c.body}</span>
                 </span>
                 <CommentReview id={c.id} labels={labels} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="rounded-card border border-line bg-surface p-4 shadow-card">
+        <h2 className="mb-3 font-display text-lg font-bold">🎬 {t.video.queue} <span className="text-muted">· {social.videos.length}</span></h2>
+        {social.videos.length === 0 ? <p className="text-sm text-muted">{t.adminQ.none}</p> : (
+          <ul className="divide-y divide-line text-sm">
+            {social.videos.map((v) => (
+              <li key={v.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                <span className="min-w-0 flex-1">
+                  <span className="num font-bold">{v.vehicles?.fleet_number}</span> · <b>{v.profiles?.display_name}</b>
+                  <a href={v.url} target="_blank" rel="noopener noreferrer nofollow" className="block truncate text-sea-600 underline">{v.url}</a>
+                </span>
+                <VideoReview id={v.id} labels={labels} />
               </li>
             ))}
           </ul>
