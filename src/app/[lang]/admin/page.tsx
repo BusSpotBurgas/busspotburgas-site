@@ -47,7 +47,10 @@ async function Admin({ lang }: { lang: Locale }) {
         <span className="font-display text-lg font-bold">📥 {t.queue.title}</span>
         <span className="font-semibold text-sea-600">{t.queue.open} →</span>
       </Link>
-      <p className="rounded-card border border-sea-100 bg-sea-50 p-4 text-sm text-sea-800">{t.admin.dashboardLead}</p>
+      <Link href={`/${lang}/admin/fleet`} className="flex items-center justify-between rounded-card border border-line bg-surface p-5 shadow-card transition hover:border-sea-300">
+        <span className="font-display text-lg font-bold">🚌 {t.nav.fleet}</span>
+        <span className="font-semibold text-sea-600">→</span>
+      </Link>
       <section className="rounded-card border border-line bg-surface p-5 shadow-card">
         <h2 className="mb-3 font-display text-lg font-bold">{t.admin.factors}</h2>
         <MfaFactors t={tt} />

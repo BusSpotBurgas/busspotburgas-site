@@ -150,7 +150,7 @@ async function Bus({ params }: { params: PageProps<"/[lang]/bus/[number]">["para
               <p className="text-sm text-muted">{t.bus.noHolder}</p>
             )}
             <Suspense>
-              <ViewerHolder vehicleId={v.id} fleet={v.fleet_number} hasOwner={Boolean(owner)} active={["run", "new", "stop"].includes(v.status)} t={t} />
+              <ViewerHolder vehicleId={v.id} fleet={v.fleet_number} hasOwner={Boolean(owner)} active={["run", "new", "stop", "service"].includes(v.status)} t={t} />
             </Suspense>
           </Card>
 

@@ -44,6 +44,8 @@ const T: Record<string, (d: NotifData, l: L) => string> = {
   follow_photo: (d, l) => (l === "bg" ? `${d.author} качи снимка на ${d.fleet}` : `${d.author} uploaded a photo of ${d.fleet}`),
   badge: (d, l) => (l === "bg" ? `Нова значка: ${badgeText(d, l)} 🎫` : `New badge: ${badgeText(d, l)} 🎫`),
   rank: (d, l) => (l === "bg" ? `Нов ранг: ${RANK_BG[d.rank ?? ""] ?? d.rank} 🎉` : `New rank: ${RANK_EN[d.rank ?? ""] ?? d.rank} 🎉`),
+  vehicle_scrapped: (d, l) =>
+    l === "bg" ? `${d.fleet} е бракувана – избери си друга кола за титуляр` : `${d.fleet} was scrapped – pick another vehicle`,
   admin_pending: (d, l) => (l === "bg" ? `Ново за одобрение (${d.count ?? 1})` : `New items to approve (${d.count ?? 1})`),
 };
 
@@ -55,6 +57,7 @@ export function notifHref(type: string, data: NotifData, lang: L): string {
   if (type === "admin_pending") return `/${lang}/admin/queue`;
   if (type === "badge" || type === "rank") return `/${lang}/me`;
   if (type.startsWith("invite") || type.startsWith("owner_")) return `/${lang}/me#holders-activity`;
+  if (type === "vehicle_scrapped") return `/${lang}/settings/holders`;
   if (type === "photo_rejected") return `/${lang}/me/photos`;
   if (data.photo) return `/${lang}/photo/${data.photo}`;
   if (data.fleet) return `/${lang}/bus/${data.fleet}`;

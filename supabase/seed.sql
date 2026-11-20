@@ -1,4 +1,4 @@
--- Автоматично от data/fleet.json (trinmo.org, Бургасбус ЕООД, проверено 16.11.2026). Не редактирай на ръка.
+-- Автоматично от data/fleet.json (trinmo.org, Бургасбус ЕООД, проверено 16.11.2026; статуси обновени от админа на 20.11.2026). Не редактирай на ръка.
 -- 9 модела, 166 коли.
 
 insert into public.models (id, name, type_bg, type_en, since, color, silhouette, sort_order) values
@@ -24,8 +24,6 @@ insert into public.vehicles (fleet_number, model_id, status) values
 ('3442', 'u12', 'run'),
 ('3445', 'u12', 'run'),
 ('3446', 'u12', 'run'),
-('3447', 'u12', 'run'),
-('3448', 'u12', 'run'),
 ('3449', 'u12', 'run'),
 ('3450', 'u12', 'run'),
 ('3452', 'u12', 'run'),
@@ -38,10 +36,8 @@ insert into public.vehicles (fleet_number, model_id, status) values
 ('3917', 'u12', 'run'),
 ('3918', 'u12', 'run'),
 ('3920', 'u12', 'run'),
-('3921', 'u12', 'run'),
 ('3922', 'u12', 'run'),
 ('3924', 'u12', 'run'),
-('3926', 'u12', 'run'),
 ('3927', 'u12', 'run'),
 ('3930', 'u12', 'run'),
 ('3931', 'u12', 'run'),
@@ -54,9 +50,13 @@ insert into public.vehicles (fleet_number, model_id, status) values
 ('4179', 'u12', 'run'),
 ('4180', 'u12', 'run'),
 ('4181', 'u12', 'run'),
-('4182', 'u12', 'run'),
 ('4183', 'u12', 'run'),
 ('4184', 'u12', 'run'),
+('3447', 'u12', 'service'),
+('3448', 'u12', 'service'),
+('4182', 'u12', 'service'),
+('3926', 'u12', 'service'),
+('3921', 'u12', 'scrapped'),
 ('2941', 'u18', 'run'),
 ('2942', 'u18', 'run'),
 ('2943', 'u18', 'run'),

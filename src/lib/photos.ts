@@ -9,7 +9,7 @@ export type VehicleDetails = {
   id: number;
   fleet_number: string;
   model_id: string;
-  status: "run" | "new" | "stop" | "off" | "scrapped";
+  status: "run" | "new" | "stop" | "service" | "off" | "scrapped";
   reg_number: string | null;
   garage: string | null;
   built_year: number | null;

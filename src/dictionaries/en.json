@@ -57,6 +57,7 @@
     "run": "In service",
     "new": "New, not in service",
     "stop": "Parked",
+    "service": "In the workshop",
     "off": "Withdrawn / parts",
     "scrapped": "Scrapped"
   },
