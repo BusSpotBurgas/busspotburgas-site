@@ -1,6 +1,11 @@
 [build]
   command = "npm run build"
   publish = ".next"
+  # Пести кредити: ако в качването няма промени по самия сайт (само README, документи,
+  # GitHub настройки, база, скриптове), Netlify не прави ново качване.
+  # Внимание: промяна САМО в netlify.toml също се пропуска – качи я заедно с промяна в кода
+  # или пусни ръчно Deploys → Trigger deploy.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude)README.md' ':(exclude)docs' ':(exclude).github' ':(exclude).gitleaks.toml' ':(exclude)supabase' ':(exclude)scripts' ':(exclude)netlify.toml'"
 
 [build.environment]
   NODE_VERSION = "22"
