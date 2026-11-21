@@ -73,10 +73,13 @@ function DirectionBlock({ d, t }: { d: Direction; t: Dict }) {
   return (
     <section className="rounded-card border border-line bg-surface p-5 shadow-card">
       <h2 className="font-display text-lg font-bold">
-        {d.stops.length >= 2 ? (
-          <>
-            {d.stops[0]} <span className="text-sea-600">→</span> {d.stops.at(-1)}
-          </>
+        {d.stops.length >= 2 && d.stops.length <= 4 ? (
+          d.stops.map((s, i) => (
+            <span key={i}>
+              {i > 0 && <span className="text-sea-600"> → </span>}
+              {s}
+            </span>
+          ))
         ) : d.headsign ? (
           `${t.lines.towards} ${d.headsign}`
         ) : (
@@ -84,7 +87,7 @@ function DirectionBlock({ d, t }: { d: Direction; t: Dict }) {
         )}
       </h2>
 
-      {d.stops.length > 2 && (
+      {d.stops.length > 4 && (
       <details className="mt-3">
         <summary className="cursor-pointer text-sm font-semibold text-sea-600">
           {t.lines.route} ({d.stops.length} {t.lines.stops})

@@ -31,7 +31,7 @@ sorted.forEach((l, i) => {
       line_id: l.id,
       direction: dir,
       headsign: d.to,
-      stops: d.from && d.to ? [d.from, d.to] : [],
+      stops: d.from && d.to ? [d.from, ...(d.via ? [d.via] : []), d.to] : [],
       weekday,
       saturday,
       sunday,
