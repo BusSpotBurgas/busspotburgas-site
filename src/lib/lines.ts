@@ -18,7 +18,7 @@ export type Direction = {
 /** Всички линии + кога са обновени разписанията. */
 export async function getLines() {
   "use cache";
-  cacheLife("hours");
+  cacheLife("minutes");
   cacheTag("lines");
   if (!hasSupabase) return { lines: [] as TransitLine[], importedAt: null as string | null };
   const db = createPublicClient();
@@ -33,7 +33,7 @@ export async function getLines() {
 /** Една линия с посоките ѝ. id идва от адреса – проверява се. */
 export async function getLine(id: string) {
   "use cache";
-  cacheLife("hours");
+  cacheLife("minutes");
   cacheTag("lines");
   if (!hasSupabase || !/^[0-9A-Za-zА-Яа-я\-]{1,12}$/.test(id)) return null;
   const db = createPublicClient();
