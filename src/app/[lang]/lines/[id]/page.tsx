@@ -73,7 +73,13 @@ function DirectionBlock({ d, t }: { d: Direction; t: Dict }) {
   return (
     <section className="rounded-card border border-line bg-surface p-5 shadow-card">
       <h2 className="font-display text-lg font-bold">
-        {d.stops.length >= 2 && d.stops.length <= 4 ? (
+        {d.stops.length > 2 && d.stops[0] === d.stops.at(-1) ? (
+          `${t.lines.circular} · ${d.stops[0]}`
+        ) : d.stops.length > 4 ? (
+          <>
+            {d.stops[0]} <span className="text-sea-600">→</span> {d.stops.at(-1)}
+          </>
+        ) : d.stops.length >= 2 ? (
           d.stops.map((s, i) => (
             <span key={i}>
               {i > 0 && <span className="text-sea-600"> → </span>}
