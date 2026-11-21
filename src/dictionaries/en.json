@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "busspotburgas – Burgasbus spotters",
-    "description": "Photos of every bus in Burgas by fleet number, owners, ratings, points and live sightings."
+    "description": "Photos of every bus in Burgas by fleet number, owners, ratings, points and rankings."
   },
   "nav": {
     "home": "Home",
@@ -32,14 +32,14 @@
   "home": {
     "kicker": "Burgasbus spotters",
     "title": "Every bus in Burgas. One photo at a time.",
-    "lead": "Shoot, upload and collect every vehicle of the city's public transport. Pick your own bus, earn points and see live sightings around town.",
+    "lead": "Shoot, upload and collect every vehicle of the city's public transport. Pick your own bus, earn points and climb the rankings.",
     "ctaFleet": "Browse the fleet",
     "ctaJoin": "Create a profile",
     "statVehicles": "vehicles",
     "statModels": "models",
     "statActive": "in service",
     "modelsTitle": "Models",
-    "stageNote": "The site is being built in stages. Now: the foundation. Next up: profiles, photos and Live.",
+    "stageNote": "The site is being built in stages. Coming next: lines and timetables, history and search.",
     "latest": "Latest photos",
     "noPhotos": "No approved photos yet. Upload the first one!"
   },
@@ -66,7 +66,7 @@
     "loginTitle": "Log in",
     "loginLead": "Welcome back, spotter.",
     "registerTitle": "Create a profile",
-    "registerLead": "Browsing is free. A profile is needed for uploads, ratings, comments and Live.",
+    "registerLead": "Browsing is free. A profile is needed for uploads, ratings, comments and owning buses.",
     "email": "Email",
     "password": "Password",
     "passwordHint": "At least 8 characters.",
@@ -161,8 +161,8 @@
         "text": "+10 pts per approved photo, +20 for the first photo of a vehicle. From Rookie to Legend."
       },
       {
-        "title": "Live sightings",
-        "text": "Spotted a bus? Tap \"I saw a bus\" and everyone sees it on the map."
+        "title": "Rankings",
+        "text": "Every month: top spotters, photo of the month and spotter of the month. Complete the album!"
       }
     ]
   },
@@ -333,7 +333,10 @@
     "claim": "This is my photo",
     "claimNote": "Short note for the admin (optional)",
     "claimSent": "Sent to the admin.",
-    "claimAlready": "You already reported this photo."
+    "claimAlready": "You already reported this photo.",
+    "share": "Share to story",
+    "making": "Making the image…",
+    "failed": "Failed – try again"
   },
   "myPhotos": {
     "title": "My photos",
@@ -550,5 +553,40 @@
     "none": "No videos yet.",
     "open": "Watch on TikTok",
     "queue": "Video links"
+  },
+  "history": {
+    "title": "History",
+    "lead": "Vehicles that no longer carry passengers – scrapped and historic. Their photos stay here as a memory.",
+    "empty": "No scrapped vehicles yet."
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Number, line, spotter or ad",
+    "go": "Search",
+    "hint": "Type a fleet number (e.g. 3921), a line (e.g. 15 or B1), a spotter name or an ad.",
+    "vehicles": "Vehicles",
+    "spotters": "Spotters",
+    "line": "Photos on line {line}",
+    "ads": "Ads",
+    "none": "Nothing found for “{q}”."
+  },
+  "lines": {
+    "title": "Lines & timetables",
+    "lead": "Every Burgasbus line – route and departure times.",
+    "empty": "Timetables are being prepared and will appear here soon.",
+    "bus": "Bus lines",
+    "express": "Express lines",
+    "trolley": "Trolleybus lines",
+    "line": "Line",
+    "all": "All lines",
+    "towards": "Towards",
+    "route": "Route",
+    "stops": "stops",
+    "weekday": "Weekdays",
+    "saturday": "Saturday",
+    "sunday": "Sunday & holidays",
+    "source": "Source",
+    "updated": "updated on",
+    "disclaimer": "Times are from the first stop and may differ on holidays and during roadworks."
   }
 }

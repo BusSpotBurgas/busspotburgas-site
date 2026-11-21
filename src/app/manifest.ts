@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     id: "/",
     name: "busspotburgas",
     short_name: "busspot",
-    description: "Спотъри на Бургасбус – снимки, титуляри, точки и Live засичания.",
+    description: "Спотъри на Бургасбус – снимки, титуляри, точки и класации.",
     lang: "bg",
     start_url: "/",
     scope: "/",

@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "db:sql": "node scripts/fleet-to-sql.mjs",
-    "icons": "node scripts/make-icons.mjs"
+    "icons": "node scripts/make-icons.mjs",
+    "lines:import": "node scripts/import-gtfs.mjs"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^1.2.3",

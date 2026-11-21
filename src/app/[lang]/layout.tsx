@@ -55,7 +55,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
     home: t.nav.home,
     fleet: t.nav.fleet,
     upload: t.nav.upload,
-    live: t.nav.liveShort,
+    live: t.nav.rankings,
     profile: t.nav.profile,
   };
 

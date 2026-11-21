@@ -39,8 +39,9 @@ export type Fleet =
 
 const EMPTY: Fleet = { ok: false, models: [], vehicles: [] };
 
-/** Модели и коли от Supabase. Кешира се за няколко минути. */
-export async function getFleet(): Promise<Fleet> {
+/** Модели и коли от Supabase. Кешира се за няколко минути.
+ *  history=true дава бракуваните и историческите коли (страница „История“). */
+export async function getFleet(history = false): Promise<Fleet> {
   "use cache";
   cacheLife("minutes");
   cacheTag("fleet", "photos");
@@ -49,7 +50,9 @@ export async function getFleet(): Promise<Fleet> {
   const db = createPublicClient();
   const [models, vehicles, stats, owners] = await Promise.all([
     db.from("models").select("id,name,type_bg,type_en,since,color,silhouette,sort_order").order("sort_order"),
-    db.from("vehicles").select("fleet_number,model_id,status").eq("is_historic", false).neq("status", "scrapped"),
+    history
+      ? db.from("vehicles").select("fleet_number,model_id,status").or("is_historic.eq.true,status.eq.scrapped")
+      : db.from("vehicles").select("fleet_number,model_id,status").eq("is_historic", false).neq("status", "scrapped"),
     db.from("vehicle_photo_stats").select("fleet_number,photo_count,cover_photo_id"),
     db.from("vehicle_holders").select("vehicles(fleet_number),profiles(display_name)").eq("role", "owner"),
   ]);

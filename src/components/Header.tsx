@@ -11,10 +11,9 @@ import { Avatar } from "./ProfileForm";
 export function Header({ lang, t }: { lang: Locale; t: Dictionary }) {
   const items = [
     { href: `/${lang}/fleet`, label: t.nav.fleet },
-    { href: null, label: t.nav.history },
-    { href: null, label: t.nav.lines },
+    { href: `/${lang}/history`, label: t.nav.history },
+    { href: `/${lang}/lines`, label: t.nav.lines },
     { href: `/${lang}/rankings`, label: t.nav.rankings },
-    { href: null, label: t.nav.live },
   ];
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur">
@@ -26,16 +25,24 @@ export function Header({ lang, t }: { lang: Locale; t: Dictionary }) {
           <TopNav lang={lang} items={items} soon={t.nav.soon} />
         </Suspense>
         <div className="ml-auto flex items-center gap-2">
-          {/* Търсачката заработва в Етап 6 */}
-          <label className="hidden items-center gap-2 rounded-full border border-line bg-canvas px-3 py-2 text-sm text-muted md:flex">
+          <form
+            action={`/${lang}/search`}
+            role="search"
+            className="hidden items-center gap-2 rounded-full border border-line bg-canvas px-3 py-2 text-sm text-muted focus-within:border-sea-500 md:flex"
+          >
             <IconSearch className="size-4" />
             <input
-              disabled
+              name="q"
+              type="search"
+              maxLength={40}
               placeholder={t.nav.search}
-              title={t.nav.soon}
+              aria-label={t.search.title}
               className="w-44 bg-transparent outline-none placeholder:text-muted/70 xl:w-56"
             />
-          </label>
+          </form>
+          <Link href={`/${lang}/search`} aria-label={t.search.title} className="grid size-9 place-items-center text-muted md:hidden">
+            <IconSearch className="size-5" />
+          </Link>
           <Suspense fallback={<span className="grid size-9 place-items-center text-muted"><IconBell className="size-5" /></span>}>
             <Bell lang={lang} label={t.nav.notifications} />
           </Suspense>

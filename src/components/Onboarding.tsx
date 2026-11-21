@@ -13,7 +13,7 @@ import { Check, FormError, Submit, fmt } from "./ui";
 type T = Pick<Dictionary, "onboarding" | "errors" | "settings" | "auth"> & { social?: Dictionary["social"] };
 type ErrKey = keyof Dictionary["errors"];
 
-const TOUR_ICONS = ["📸", "🤝", "🏆", "📍"];
+const TOUR_ICONS = ["📸", "🤝", "🏆", "🥇"];
 
 export function Onboarding({
   lang,

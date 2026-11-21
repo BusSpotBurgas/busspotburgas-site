@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ClaimButton, DownloadOriginal, SwipeNav } from "@/components/PhotoClient";
+import { ShareStory } from "@/components/ShareStory";
 import { Comments, FollowButton, LikeButton } from "@/components/Social";
 import { getPhotoSocial, getViewerPhoto } from "@/lib/social";
 import { getCurrentUser } from "@/lib/auth";
@@ -78,9 +79,18 @@ async function Photo({ params }: { params: PageProps<"/[lang]/photo/[id]">["para
                 )}
               </p>
             </div>
-            <Link href={`/${lang}/bus/${num}`} className="text-sm font-semibold text-sea-600 hover:underline">
-              ← {t.photo.back}
-            </Link>
+            <div className="flex items-center gap-3">
+              <ShareStory
+                src={publicPhotoUrl(p.id, "display")}
+                number={num}
+                line={p.line}
+                author={p.author_name ?? t.photo.formerSpotter}
+                labels={{ share: t.photo.share, making: t.photo.making, failed: t.photo.failed }}
+              />
+              <Link href={`/${lang}/bus/${num}`} className="text-sm font-semibold text-sea-600 hover:underline">
+                ← {t.photo.back}
+              </Link>
+            </div>
           </div>
 
           <dl className="grid grid-cols-2 gap-3 rounded-card border border-line bg-surface p-4 text-sm shadow-card sm:grid-cols-4">

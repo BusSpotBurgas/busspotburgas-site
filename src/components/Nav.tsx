@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { IconBus, IconHome, IconLive, IconPlus, IconUser } from "./icons";
+import { IconBus, IconHome, IconPlus, IconTrophy, IconUser } from "./icons";
 
 type Item = { href: string | null; label: string };
 
@@ -69,7 +69,7 @@ export function TopNavView({ lang, items, soon, pathname }: { lang: string; item
   );
 }
 
-/** Долно меню на телефон: Начало, Автопарк, „+“, Live, Профил. */
+/** Долно меню на телефон: Начало, Автопарк, „+“, Класации, Профил. */
 type BottomLabels = { home: string; fleet: string; upload: string; live: string; profile: string };
 
 export function BottomNav(p: { lang: string; labels: BottomLabels }) {
@@ -81,7 +81,7 @@ export function BottomNavView({ lang, labels, pathname }: { lang: string; labels
     { href: `/${lang}`, label: labels.home, icon: <IconHome className="size-6" /> },
     { href: `/${lang}/fleet`, label: labels.fleet, icon: <IconBus className="size-6" /> },
     { href: `/${lang}/upload`, label: labels.upload, icon: <IconPlus className="size-6" />, main: true },
-    { href: null, label: labels.live, icon: <IconLive className="size-6" /> },
+    { href: `/${lang}/rankings`, label: labels.live, icon: <IconTrophy className="size-6" /> },
     { href: `/${lang}/me`, label: labels.profile, icon: <IconUser className="size-6" /> },
   ];
   return (
