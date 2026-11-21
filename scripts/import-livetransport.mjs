@@ -2,7 +2,7 @@
 // Само Бургасбус – линиите на Айтос Автотранспорт се пропускат.
 // Употреба:  npm run lines:live  [-- --dry]
 // Ключовете се четат от .env.local (никога не влизат в git).
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 
 const API = "https://next.livetransport.eu/burgas";
@@ -76,13 +76,18 @@ lines.forEach((l, i) => Object.assign(l, { sort_order: i, updated_at: new Date()
 
 if (dry) process.exit(0);
 
-const env = Object.fromEntries(
+// На компютъра – от .env.local; в GitHub Actions – от тайните (secrets) на хранилището
+const env = existsSync(".env.local") ? Object.fromEntries(
   readFileSync(".env.local", "utf8")
     .replace(/^﻿/, "")
     .split(/\r?\n/)
     .filter((l) => l.includes("=") && !l.startsWith("#"))
     .map((l) => [l.slice(0, l.indexOf("=")).trim(), l.slice(l.indexOf("=") + 1).trim()])
-);
+) : process.env;
+if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.SUPABASE_SECRET_KEY) {
+  console.error("Липсват NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SECRET_KEY");
+  process.exit(1);
+}
 const db = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SECRET_KEY, { auth: { persistSession: false } });
 const must = ({ error }, what) => {
   if (error) {

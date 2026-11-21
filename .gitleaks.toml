@@ -1,0 +1,10 @@
+# gitleaks: стандартните правила + изключения за неща, които по замисъл са публични
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Публични стойности"
+paths = [
+  '''src/lib/push-public\.ts''', # публичен VAPID ключ за push
+  '''\.env\.example''',          # само образци (xxxx)
+]

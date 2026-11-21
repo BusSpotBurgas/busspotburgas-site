@@ -96,11 +96,32 @@ export async function setStepAction(step: OnboardingStep, lang: string) {
 /** „Изтегли моите данни“ (GDPR) – всичко, което пазим за спотъра. */
 export async function exportDataAction(): Promise<string> {
   const { db, uid, user } = await session();
-  const [profile, holders, noHolder] = await Promise.all([
-    db.from("profiles").select("*").eq("id", uid).single(),
-    db.from("vehicle_holders").select("role,created_at,vehicles(fleet_number,model_id)").eq("user_id", uid),
-    db.from("model_no_holder").select("model_id").eq("user_id", uid),
-  ]);
+  // Секретният ключ само на сървъра, винаги филтрирано по uid от сесията
+  const all = createAdminClient();
+  const mine = (table: string, cols = "*", col = "user_id") => all.from(table).select(cols).eq(col, uid);
+  const [profile, holders, noHolder, photos, comments, likes, ratings, follows, points, badges, videos, invitesSent, invitesGot, votes, potmVotes, claims, reports, notifications, push, descriptions] =
+    await Promise.all([
+      db.from("profiles").select("*").eq("id", uid).single(),
+      db.from("vehicle_holders").select("role,created_at,vehicles(fleet_number,model_id)").eq("user_id", uid),
+      db.from("model_no_holder").select("model_id").eq("user_id", uid),
+      mine("photos", "id,status,kind,line,place,ad,description,rights_shared,width,height,is_night,is_rain,reject_reason,created_at,updated_at,vehicles(fleet_number),photo_private(taken_at)"),
+      mine("photo_comments"),
+      mine("photo_likes"),
+      mine("vehicle_ratings"),
+      mine("follows"),
+      mine("points_ledger"),
+      mine("user_badges"),
+      mine("videos"),
+      mine("holder_invites", "*", "requester_id"),
+      mine("holder_invites", "*", "owner_id"),
+      mine("owner_votes", "*", "voter_id"),
+      mine("potm_votes"),
+      mine("photo_claims"),
+      mine("reports"),
+      mine("notifications"),
+      mine("push_subscriptions", "endpoint,created_at"),
+      mine("vehicle_descriptions", "vehicle_id,pending,pending_at", "pending_by"),
+    ]);
   return JSON.stringify(
     {
       exported_at: new Date().toISOString(),
@@ -115,6 +136,23 @@ export async function exportDataAction(): Promise<string> {
       profile: profile.data,
       holders: holders.data,
       no_holder_models: noHolder.data?.map((r) => r.model_id),
+      photos: photos.data,
+      comments: comments.data,
+      likes: likes.data,
+      ratings: ratings.data,
+      follows: follows.data,
+      points: points.data,
+      badges: badges.data,
+      videos: videos.data,
+      partner_requests_sent: invitesSent.data,
+      partner_requests_received: invitesGot.data,
+      owner_votes: votes.data,
+      photo_of_month_votes: potmVotes.data,
+      authorship_claims: claims.data,
+      reports: reports.data,
+      notifications: notifications.data,
+      push_devices: push.data,
+      pending_descriptions: descriptions.data,
     },
     null,
     2

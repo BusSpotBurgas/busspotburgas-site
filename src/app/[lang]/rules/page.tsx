@@ -13,5 +13,5 @@ export default async function Page({ params }: PageProps<"/[lang]/rules">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const t = await getDictionary(lang);
-  return <LegalPage kind="rules" lang={lang} title={t.legal.rulesTitle} draft={t.legal.draft} />;
+  return <LegalPage kind="rules" lang={lang} title={t.legal.rulesTitle} updatedLabel={t.legal.updated} />;
 }

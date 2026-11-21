@@ -1,0 +1,27 @@
+# Всеки понеделник обновява линиите и разписанията на Бургасбус (зимни/летни часове и промени).
+name: Обновяване на разписанията
+
+on:
+  schedule:
+    - cron: "0 3 * * 1" # понеделник, 03:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  timetables:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Изтегляне и запис
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: node scripts/import-livetransport.mjs

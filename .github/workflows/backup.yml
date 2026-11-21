@@ -1,0 +1,35 @@
+# Всяка неделя прави архив на базата. Архивът се пази 90 дни в това (частно) хранилище,
+# в Actions → „Архив на базата“ → Artifacts.
+name: Архив на базата
+
+on:
+  schedule:
+    - cron: "30 2 * * 0" # неделя, 02:30 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Архив (pg_dump)
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          mkdir backup
+          day=$(date -u +%Y-%m-%d)
+          # Схемата и данните на нашите таблици + потребителите (auth)
+          docker run --rm -e PGURL="$SUPABASE_DB_URL" -v "$PWD/backup:/out" postgres:17 \
+            sh -c 'pg_dump "$PGURL" --no-owner --no-privileges --schema=public --schema=auth --file=/out/db.sql'
+          gzip -9 backup/db.sql
+          mv backup/db.sql.gz "backup/busspotburgas-$day.sql.gz"
+          ls -lh backup
+      - name: Запази архива
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup
+          path: backup/*.sql.gz
+          retention-days: 90

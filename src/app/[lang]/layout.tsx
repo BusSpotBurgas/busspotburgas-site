@@ -5,6 +5,7 @@ import { Footer, Header } from "@/components/Header";
 import { BottomNav, BottomNavView } from "@/components/Nav";
 import { Suspense } from "react";
 import { RegisterSW } from "@/components/RegisterSW";
+import { Analytics } from "@/components/Analytics";
 import { getDictionary, hasLocale, locales } from "@/lib/i18n";
 import "../globals.css";
 
@@ -69,6 +70,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
           <BottomNav lang={lang} labels={navLabels} />
         </Suspense>
         <RegisterSW />
+        <Analytics />
       </body>
     </html>
   );

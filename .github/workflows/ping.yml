@@ -1,0 +1,26 @@
+# Всеки ден „събужда“ Supabase, за да не заспи (безплатният план спира след 7 дни без заявки).
+name: Пинг на Supabase
+
+on:
+  schedule:
+    - cron: "17 6 * * *" # всеки ден в 06:17 UTC
+  workflow_dispatch: {} # и ръчно от Actions
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Заявка към базата
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" \
+            "$SUPABASE_URL/rest/v1/models?select=id&limit=1" \
+            -H "apikey: $SUPABASE_PUBLISHABLE_KEY")
+          echo "Supabase отговори: $code"
+          test "$code" = "200"
