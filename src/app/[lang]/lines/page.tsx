@@ -44,7 +44,7 @@ export default async function LinesPage({ params }: PageProps<"/[lang]/lines">) 
                       className="flex items-center gap-3 rounded-card border border-line bg-surface p-3 shadow-card transition hover:-translate-y-0.5 hover:shadow-lift"
                     >
                       <LineBadge id={l.id} kind={l.kind} />
-                      <span className="line-clamp-2 text-sm font-medium">{l.name ?? ""}</span>
+                      <span className="line-clamp-2 text-sm font-medium">{l.name ?? t.lines.circular}</span>
                     </Link>
                   ))}
                 </div>

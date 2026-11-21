@@ -587,6 +587,8 @@
     "sunday": "Sunday & holidays",
     "source": "Source",
     "updated": "updated on",
-    "disclaimer": "Times are from the first stop and may differ on holidays and during roadworks."
+    "disclaimer": "Times are from the first stop and may differ on holidays and during roadworks. Spotted a mistake? Let us know.",
+    "circular": "Circular line",
+    "departures": "Departure times"
   }
 }

@@ -40,9 +40,12 @@ async function Line({ params }: { params: PageProps<"/[lang]/lines/[id]">["param
           <h1 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
             {t.lines.line} {line.id}
           </h1>
-          {line.name && <p className="text-muted">{line.name}</p>}
+          <p className="text-muted">{line.name ?? t.lines.circular}</p>
         </div>
       </div>
+      {line.notes && (
+        <p className="mt-5 rounded-card border border-sea-500/30 bg-sea-50 p-4 text-sm">{line.notes}</p>
+      )}
 
       <div className="mt-8 space-y-10">
         {directions.map((d) => (
@@ -70,9 +73,18 @@ function DirectionBlock({ d, t }: { d: Direction; t: Dict }) {
   return (
     <section className="rounded-card border border-line bg-surface p-5 shadow-card">
       <h2 className="font-display text-lg font-bold">
-        {t.lines.towards} {d.headsign ?? d.stops.at(-1)}
+        {d.stops.length >= 2 ? (
+          <>
+            {d.stops[0]} <span className="text-sea-600">→</span> {d.stops.at(-1)}
+          </>
+        ) : d.headsign ? (
+          `${t.lines.towards} ${d.headsign}`
+        ) : (
+          t.lines.departures
+        )}
       </h2>
 
+      {d.stops.length > 2 && (
       <details className="mt-3">
         <summary className="cursor-pointer text-sm font-semibold text-sea-600">
           {t.lines.route} ({d.stops.length} {t.lines.stops})
@@ -85,6 +97,7 @@ function DirectionBlock({ d, t }: { d: Direction; t: Dict }) {
           ))}
         </ol>
       </details>
+      )}
 
       <div className="mt-5 grid gap-5 md:grid-cols-3">
         {days.map((x) => (
@@ -111,7 +124,11 @@ function Timetable({ times }: { times: string[] }) {
         {[...byHour.entries()].map(([h, mins]) => (
           <tr key={h} className="border-b border-line/60 last:border-0">
             <th className="num w-10 py-1 pr-2 text-left font-extrabold">{h}</th>
-            <td className="num py-1 tracking-wide text-ink/80">{mins.join("  ")}</td>
+            <td className="num flex flex-wrap gap-x-3 py-1 text-ink/80">
+              {mins.map((m, i) => (
+                <span key={i}>{m}</span>
+              ))}
+            </td>
           </tr>
         ))}
       </tbody>

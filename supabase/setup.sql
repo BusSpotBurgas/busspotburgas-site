@@ -1862,6 +1862,9 @@ create policy "transit_meta_read" on public.transit_meta for select to anon, aut
 grant select on public.transit_lines, public.transit_directions, public.transit_meta to anon, authenticated;
 grant all on public.transit_lines, public.transit_directions, public.transit_meta to service_role;
 
+-- Бележки към линията (кога е в сила, курсове през други места и т.н.)
+alter table public.transit_lines add column if not exists notes text check (char_length(notes) <= 600);
+
 
 -- Автоматично от data/fleet.json (trinmo.org, Бургасбус ЕООД, проверено 16.11.2026; статуси обновени от админа на 20.11.2026). Не редактирай на ръка.
 -- 9 модела, 166 коли.

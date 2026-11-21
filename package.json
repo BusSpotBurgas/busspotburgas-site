@@ -9,7 +9,8 @@
     "lint": "eslint",
     "db:sql": "node scripts/fleet-to-sql.mjs",
     "icons": "node scripts/make-icons.mjs",
-    "lines:import": "node scripts/import-gtfs.mjs"
+    "lines:import": "node scripts/import-gtfs.mjs",
+    "lines:manual": "node scripts/import-timetables.mjs"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^1.2.3",

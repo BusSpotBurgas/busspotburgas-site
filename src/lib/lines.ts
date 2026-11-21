@@ -5,7 +5,7 @@ import { hasSupabase } from "./supabase/env";
 import { createPublicClient } from "./supabase/server";
 
 export type LineKind = "bus" | "express" | "trolley";
-export type TransitLine = { id: string; kind: LineKind; name: string | null };
+export type TransitLine = { id: string; kind: LineKind; name: string | null; notes?: string | null };
 export type Direction = {
   direction: number;
   headsign: string | null;
@@ -37,7 +37,7 @@ export async function getLine(id: string) {
   cacheTag("lines");
   if (!hasSupabase || !/^[0-9A-Za-zА-Яа-я\-]{1,12}$/.test(id)) return null;
   const db = createPublicClient();
-  const { data: line } = await db.from("transit_lines").select("id,kind,name").eq("id", id).maybeSingle();
+  const { data: line } = await db.from("transit_lines").select("id,kind,name,notes").eq("id", id).maybeSingle();
   if (!line) return null;
   const { data: dirs } = await db
     .from("transit_directions")
